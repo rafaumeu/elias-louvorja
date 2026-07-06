@@ -8,5 +8,6 @@
     "media",
     "lyric",
     "album"
-  ]
+  ],
+  "is_mobile": true
 }

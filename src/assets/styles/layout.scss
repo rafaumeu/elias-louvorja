@@ -3,3 +3,48 @@
     width: $i * 10% !important;
   }
 }
+
+/* MOBILE RESPONSIVE BREAKPOINTS */
+@media (max-width: 600px) {
+  /* Cards de módulos no grid de apps */
+  .apps-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 4px !important;
+  }
+
+  /* Esconder toolbar vertical de módulos em fullscreen mobile */
+  .v-dialog--fullscreen .v-toolbar {
+    padding: 0 8px !important;
+  }
+
+  /* Reduzir padding em dialogs fullscreen */
+  .v-dialog--fullscreen .v-card-text {
+    padding: 8px !important;
+  }
+
+  /* Tabelas compactas em mobile */
+  .v-table .v-table__wrapper table {
+    font-size: 0.85rem !important;
+  }
+
+  /* Scroll horizontal nativo em tabelas que não cabem */
+  .v-table .v-table__wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Esconder colunas de ação em mobile */
+  th:last-child,
+  td:last-child {
+    min-width: 40px !important;
+  }
+
+  /* Textos truncados em mobile */
+  .text-truncate-mobile {
+    max-width: 120px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}

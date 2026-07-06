@@ -10,17 +10,9 @@
 
   <v-main v-if="this.$userdata.get('layout') !== 'ribbon'" class="bg-main">
     <Apps />
-    <AppTrayArea />
+    <AppTrayArea v-if="!is_mobile" />
   </v-main>
   <v-main class="d-flex flex-column" v-else>
-    <v-sheet
-      :color="$theme.primary()"
-      width="100%"
-      height="100%"
-      class="d-flex align-center justify-center"
-    >
-      <img src="@/assets/imgs/logo.svg" />
-    </v-sheet>
     <AppTrayArea horizontal />
   </v-main>
 
@@ -50,6 +42,11 @@ export default {
     Apps,
     AppsRibbon,
     AppTrayArea,
+  },
+  computed: {
+    is_mobile() {
+      return this.$vuetify.display.width < 600;
+    },
   },
   mounted() {
     //Carregar os dados salvos

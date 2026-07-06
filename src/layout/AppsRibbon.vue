@@ -8,7 +8,7 @@
           :value="group_key"
           v-show="countModules(group.modules) != 0"
           show-arrows
-          class="px-8"
+          :class="is_mobile ? 'px-2' : 'px-8'"
         >
           {{ $t(group.title) }}
         </v-tab>
@@ -42,8 +42,9 @@
               <v-card-text
                 class="d-flex flex-column align-center justify-center h-100 pa-0 pt-1 px-2"
               >
-                <v-icon :icon="module.icon" :size="40" style="flex: 1" />
+                <v-icon :icon="module.icon" :size="is_mobile ? 28 : 40" style="flex: 1" />
                 <v-card-title
+                  v-if="!is_mobile"
                   class="text-center font-weight-light text-title-small"
                   style="text-wrap: initial"
                 >
@@ -66,6 +67,9 @@ export default {
     tab: null,
   }),
   computed: {
+    is_mobile() {
+      return this.$vuetify.display.width < 600;
+    },
     module_group() {
       return Object.entries(this.$modules.getGroups())
         .filter(([, value]) => Object.keys(value.modules).length > 0)

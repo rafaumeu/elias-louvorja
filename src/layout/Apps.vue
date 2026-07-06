@@ -43,7 +43,7 @@
                   "
                   @click="$modules.open(module_key)"
                   class="ma-1"
-                  :width="140"
+                  :width="is_mobile ? 'calc(33% - 12px)' : 140"
                 >
                   <v-card-text
                     class="d-flex flex-column align-center justify-center h-100 px-0"
@@ -51,10 +51,11 @@
                     <v-icon
                       :icon="module.icon"
                       color="#FFFFFF"
-                      :size="40"
+                      :size="is_mobile ? 28 : 40"
                       style="flex: 1"
                     />
                     <v-card-title
+                      v-if="!is_mobile"
                       class="text-center font-weight-light text-title-small"
                       style="text-wrap: initial"
                     >
@@ -90,6 +91,9 @@ export default {
           result[key] = value;
           return result;
         }, {});
+    },
+    is_mobile() {
+      return this.$vuetify.display.width < 600;
     },
     is_dev: {
       get() {

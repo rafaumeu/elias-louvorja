@@ -36,6 +36,7 @@
     <v-divider v-if="remote" vertical />
 
     <v-btn
+      v-if="!is_mobile"
       :icon="layout == 'apps' ? 'mdi-tab' : 'mdi-apps'"
       @click="changeLayout()"
     />
@@ -52,6 +53,9 @@ export default {
     LanguageSelector,
   },
   computed: {
+    is_mobile() {
+      return this.$vuetify.display.width < 600;
+    },
     layout() {
       return this.$userdata.get("layout");
     },

@@ -10,7 +10,7 @@
   >
     <template v-slot:header>
       <div :class="classform.group">
-        <div :class="classform.group_item" style="flex-basis: 600px">
+        <div :class="classform.group_item" :style="{ 'flex-basis': compact ? '100%' : '600px' }">
           <Search
             v-model="search"
             :label="t('inputs.search')"
@@ -19,7 +19,7 @@
             :disabled-hint="t('inputs.search_disabled')"
           />
         </div>
-        <div :class="classform.group_item" style="flex-basis: 350px">
+        <div :class="classform.group_item" :style="{ 'flex-basis': compact ? '100%' : '350px' }">
           <Checkbox
             v-model="userdata.search.name"
             :label="t('inputs.filter_name')"
@@ -37,8 +37,8 @@
             :label="t('inputs.filter_track')"
           />
         </div>
-        <v-divider vertical />
-        <div :class="classform.group_item" style="flex-basis: 200px">
+        <v-divider v-if="!compact" vertical />
+        <div v-if="!compact" :class="classform.group_item" style="flex-basis: 200px">
           <div>
             <Checkbox
               switch

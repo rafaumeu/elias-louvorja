@@ -6,5 +6,6 @@
   "icon": "mdi-music-box-multiple",
   "dependencies": [
     "album"
-  ]
+  ],
+  "is_mobile": true
 }

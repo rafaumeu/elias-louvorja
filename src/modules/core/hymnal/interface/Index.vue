@@ -17,7 +17,7 @@
   >
     <template v-slot:header>
       <div :class="classform.group">
-        <div :class="classform.group_item" style="flex-basis: 600px">
+        <div :class="classform.group_item" :style="{ 'flex-basis': compact ? '100%' : '600px' }">
           <l-search
             v-model="search"
             :label="t('inputs.search')"

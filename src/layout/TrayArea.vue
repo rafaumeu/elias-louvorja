@@ -1,7 +1,7 @@
 <template>
   <v-sheet
     class="apps-bar d-flex flex-column"
-    v-if="Object.keys(modules).length > 0"
+    v-if="Object.keys(modules).length > 0 && !is_mobile"
     :style="!horizontal ? 'width:80px;' : ''"
   >
     <div class="apps-bar-header"></div>
@@ -70,6 +70,9 @@ export default {
     },
   },
   computed: {
+    is_mobile() {
+      return this.$vuetify.display.width < 600;
+    },
     modules: {
       get() {
         return Object.values(this.$modules.getTray());

@@ -41,8 +41,14 @@ export default {
     this.addTray(id);
   },
   get(list = null) {
+    const isProd = import.meta.env.PROD;
     if (list == null) {
-      return $appdata.get("modules");
+      const modules = $appdata.get("modules");
+      if (!isProd) return modules;
+      // Filter out development-only modules in production
+      return Object.fromEntries(
+        Object.entries(modules).filter(([, v]) => !v?.development)
+      );
     }
 
     if (typeof list == "string") {

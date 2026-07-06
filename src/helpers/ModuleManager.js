@@ -29,6 +29,12 @@ export default {
         return;
       }
 
+      // Skip development-only modules in production
+      if (manifest.development && import.meta.env.PROD) {
+        console.info(`[production] Skipping dev module: ${manifest.id}`);
+        return;
+      }
+
       // Register module in application's modules
       $appdata.set(`modules.${manifest.id}`, {
         id: manifest.id,

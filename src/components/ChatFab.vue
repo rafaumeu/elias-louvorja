@@ -902,12 +902,29 @@ export default {
         return { text: html, sources: [`${this.currentProvider?.name || "LLM"} • ${MODEL}`] };
       } catch (e) {
         console.warn(`[ChatFab] ${providerId} LLM call failed:`, e.message || e);
-        // Mensagem útil: se 401, key inválida; se 429, rate limit
+        // Diagnóstico específico por status code e provider.
         let hint = "";
         const errMsg = String(e.message || e);
-        if (/401/.test(errMsg)) hint = "<br><br>⚠️ <strong>API Key inválida ou expirada.</strong> Verifique a key nas Configurações IA.";
-        else if (/429/.test(errMsg)) hint = "<br><br>⏱️ <strong>Rate limit excedido.</strong> Aguarde alguns segundos ou troque de provider.";
-        else if (/5\d\d/.test(errMsg)) hint = "<br><br>🔧 <strong>Servidor do provider indisponível.</strong> Tente novamente em alguns instantes.";
+        const providerName = this.currentProvider?.name || "LLM";
+
+        if (/401/.test(errMsg)) {
+          hint = `<br><br>⚠️ <strong>API Key inválida ou expirada.</strong> Verifique a key nas Configurações IA.`;
+        } else if (/429/.test(errMsg)) {
+          // Z.AI/GLM usa 429 + code interno pra coisas distintas:
+          // - code 1113 ou "余额不足" → sem créditos (billing, não rate limit)
+          // - caso contrário → rate limit real
+          if (/1113|余额不足|insufficient.*balance|no.*resource/i.test(errMsg)) {
+            hint = `<br><br>💳 <strong>Créditos insuficientes no ${providerName}.</strong> Acesse o painel do provider, recarregue créditos e tente novamente.`;
+          } else {
+            hint = `<br><br>⏱️ <strong>Rate limit excedido.</strong> Aguarde alguns segundos ou troque de provider.`;
+          }
+        } else if (/403/.test(errMsg)) {
+          hint = `<br><br>🚫 <strong>Acesso negado.</strong> Sua conta pode estar bloqueada ou sem permissão para este modelo.`;
+        } else if (/5\d\d/.test(errMsg)) {
+          hint = `<br><br>🔧 <strong>Servidor do ${providerName} indisponível.</strong> Tente novamente em alguns instantes.`;
+        } else if (/Failed to fetch|NetworkError|network/i.test(errMsg)) {
+          hint = `<br><br>📡 <strong>Erro de rede.</strong> Verifique sua conexão ou se o provider está acessível.`;
+        }
         return {
           text: this.$t("chatbot.fallback") + hint,
           sources: ["louvorja.com/ajuda"],

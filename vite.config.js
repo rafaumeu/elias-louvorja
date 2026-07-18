@@ -19,6 +19,11 @@ export default ({ mode }) => {
       }),
       VitePWA({
         registerType: "autoUpdate", // Registra o Service Worker para atualizar automaticamente
+        // Força o novo SW a assumir imediatamente, sem esperar todas as tabs fecharem.
+        // Evita o bug "usuário roda código antigo do cache PWA após deploy".
+        strategies: "generateSW",
+        skipWaiting: true,
+        clientsClaim: true,
         devOptions: {
           enabled: true, // Ativa o PWA também durante o desenvolvimento
         },

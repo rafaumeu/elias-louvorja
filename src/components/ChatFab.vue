@@ -491,13 +491,25 @@ export default {
     // ========== BYOK (Bring Your Own Key) ==========
     async initVault() {
       try {
-        // Carrega o último provider ativo salvo (multi-provider vault)
-        const creds = await loadAnyCredentials();
+        // Carrega o último provider ATIVO (não qualquer slot arbitrário).
+        // Persistido separado do vault pra sobreviver reloads e respeitar
+        // a escolha do usuário mesmo com múltiplos slots salvos.
+        const activeId = localStorage.getItem("louvorja_llm_active");
+        let creds = null;
+        if (activeId) {
+          creds = await loadCredentials(activeId);
+        }
+        // Fallback: se não tem active salvo OU o slot ativo foi removido,
+        // pega o primeiro disponível e o registra como ativo.
+        if (!creds) {
+          creds = await loadAnyCredentials();
+        }
         if (creds) {
           this.llmConfig.providerId = creds.providerId;
           this.llmConfig.modelId = creds.modelId;
           this.llmConfig._vaultKey = creds.apiKey;
           this.llmConfig.hasKey = true;
+          localStorage.setItem("louvorja_llm_active", creds.providerId);
           console.info(`[LLM] BYOK ativo: ${creds.providerId}/${creds.modelId}`);
         }
       } catch (e) {
@@ -520,6 +532,8 @@ export default {
         await saveCredentials(this.llmConfig.providerId, this.llmConfig.modelId, this.llmConfig.apiKey.trim());
         this.llmConfig._vaultKey = this.llmConfig.apiKey.trim();
         this.llmConfig.hasKey = true;
+        // Marca este provider como o ativo (sobrevive a reloads)
+        localStorage.setItem("louvorja_llm_active", this.llmConfig.providerId);
         const savedProvider = this.currentProvider?.name || this.llmConfig.providerId;
         const savedModel = this.llmConfig.modelId;
         // Limpa a key do state (já está salva no vault)
@@ -545,6 +559,7 @@ export default {
       this.llmConfig.apiKey = "";
       this.llmConfig.providerId = "groq";
       this.llmConfig.modelId = "llama-3.3-70b-versatile";
+      localStorage.removeItem("louvorja_llm_active");
       this.showSettingsModal = false;
     },
     async removeSpecificCredentials(providerId) {
@@ -558,6 +573,7 @@ export default {
         this.llmConfig.hasKey = false;
         this.llmConfig.providerId = "groq";
         this.llmConfig.modelId = "llama-3.3-70b-versatile";
+        localStorage.removeItem("louvorja_llm_active");
       }
     },
     async selectSavedProvider(providerId) {
@@ -568,6 +584,7 @@ export default {
       this.llmConfig.modelId = creds.modelId;
       this.llmConfig._vaultKey = creds.apiKey;
       this.llmConfig.hasKey = true;
+      localStorage.setItem("louvorja_llm_active", creds.providerId);
       this.showSettingsModal = false;
       this.messages.push({
         role: "bot",
@@ -575,13 +592,31 @@ export default {
         time: this.getCurrentTime(),
       });
     },
-    onProviderChange() {
+    async onProviderChange() {
       // Ao trocar provider, seleciona o primeiro model disponível
       const models = this.currentProviderModels;
       if (models.length > 0) {
         this.llmConfig.modelId = models[0].id;
       }
       this.llmConfig.apiKey = "";
+      // CRÍTICO: limpa a key do provider anterior. Sem isso, getActiveApiKey()
+      // continuava retornando a key do provider antigo (bug do "rate limit
+      // com key novinha": request ia pra Z.AI com a key do Groq).
+      this.llmConfig._vaultKey = null;
+      this.llmConfig.hasKey = false;
+      // Auto-carrega se já existe key salva pra este provider no vault.
+      // Evita "ter que redigitar toda vez" ao alternar entre providers.
+      try {
+        const creds = await loadCredentials(this.llmConfig.providerId);
+        if (creds) {
+          this.llmConfig.modelId = creds.modelId || this.llmConfig.modelId;
+          this.llmConfig._vaultKey = creds.apiKey;
+          this.llmConfig.hasKey = true;
+          localStorage.setItem("louvorja_llm_active", this.llmConfig.providerId);
+        }
+      } catch {
+        // vault corrompido pra este provider — ignora, usuário vai digitar key nova
+      }
     },
     getActiveApiKey() {
       // Se usuário salvou key própria, usa ela. Senão, fallback pro .env default.

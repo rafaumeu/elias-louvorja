@@ -228,6 +228,33 @@
           </a>
         </div>
 
+        <!-- Chaves salvas (lista) — mostra quais providers têm key configurada -->
+        <div v-if="savedProvidersList.length > 0" class="lj-settings__saved-keys">
+          <label class="lj-settings__label">{{ $t('chatbot.saved_keys_label') || 'Chaves salvas neste navegador' }}</label>
+          <div class="lj-settings__saved-list">
+            <div
+              v-for="entry in savedProvidersList"
+              :key="entry.providerId"
+              class="lj-settings__saved-item"
+              :class="{ 'lj-settings__saved-item--active': entry.isActive }"
+              @click="selectSavedProvider(entry.providerId)"
+            >
+              <v-icon size="16" :color="entry.isActive ? 'primary' : 'success'">mdi-check-circle</v-icon>
+              <span class="lj-settings__saved-item-name">{{ entry.providerName }}</span>
+              <span class="lj-settings__saved-item-model">{{ entry.modelName }}</span>
+              <v-btn
+                icon
+                variant="text"
+                size="x-small"
+                color="error"
+                @click.stop="removeSpecificCredentials(entry.providerId)"
+              >
+                <v-icon size="14">mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </div>
+        </div>
+
         <!-- Danger zone -->
         <div v-if="llmConfig.hasKey" class="lj-settings__danger">
           <v-btn size="small" variant="text" color="error" @click="removeCredentials">
@@ -238,9 +265,12 @@
       </v-card-text>
 
       <v-card-actions class="lj-settings__actions">
+        <v-btn variant="text" @click="showSettingsModal = false">
+          {{ $t('common.cancel') }}
+        </v-btn>
         <v-spacer />
-        <v-btn variant="text" @click="showSettingsModal = false">{{ $t('common.cancel') }}</v-btn>
-        <v-btn color="primary" @click="saveCredentials" :loading="savingKey">
+        <v-btn color="primary" variant="elevated" elevation="2" @click="saveCredentials" :loading="savingKey">
+          <v-icon size="16" class="mr-1">mdi-content-save</v-icon>
           {{ $t('common.save') }}
         </v-btn>
       </v-card-actions>
@@ -252,7 +282,8 @@
 import { useTheme } from "vuetify";
 import { buildSystemPrompt } from "@/utils/chatbot-rag";
 import { LLM_PROVIDERS, listProviders, getProvider } from "@/utils/llm-providers";
-import { saveCredentials, loadCredentials, hasCredentials, clearCredentials } from "@/utils/llm-keyvault";
+import { callOpenAICompat, callGemini, callAnthropic } from "@/utils/llm-adapters";
+import { saveCredentials, loadCredentials, loadAnyCredentials, clearCredentials, listCredentialsMeta } from "@/utils/llm-keyvault";
 
 // API_TOKEN removed from frontend — move to backend/.env
 
@@ -388,6 +419,24 @@ export default {
       const p = this.currentProvider;
       return p ? p.keyUrl : "#";
     },
+    savedProvidersList() {
+      // Lista providers que já têm key salva no vault (para o painel "chaves salvas")
+      try {
+        const meta = listCredentialsMeta();
+        return meta.map((m) => {
+          const p = getProvider(m.providerId);
+          return {
+            providerId: m.providerId,
+            providerName: p?.name || m.providerId,
+            modelId: m.modelId,
+            modelName: p?.models?.find((mo) => mo.id === m.modelId)?.name || m.modelId,
+            isActive: m.providerId === this.llmConfig.providerId,
+          };
+        });
+      } catch {
+        return [];
+      }
+    },
     currentThemeName() {
       const dark = this.theme?.global?.current?.value?.dark;
       return dark
@@ -442,16 +491,14 @@ export default {
     // ========== BYOK (Bring Your Own Key) ==========
     async initVault() {
       try {
-        // Verifica se já tem credentials salvas
-        if (hasCredentials()) {
-          const creds = await loadCredentials();
-          if (creds) {
-            this.llmConfig.providerId = creds.providerId;
-            this.llmConfig.modelId = creds.modelId;
-            this.llmConfig._vaultKey = creds.apiKey;
-            this.llmConfig.hasKey = true;
-            console.info(`[LLM] BYOK ativo: ${creds.providerId}/${creds.modelId}`);
-          }
+        // Carrega o último provider ativo salvo (multi-provider vault)
+        const creds = await loadAnyCredentials();
+        if (creds) {
+          this.llmConfig.providerId = creds.providerId;
+          this.llmConfig.modelId = creds.modelId;
+          this.llmConfig._vaultKey = creds.apiKey;
+          this.llmConfig.hasKey = true;
+          console.info(`[LLM] BYOK ativo: ${creds.providerId}/${creds.modelId}`);
         }
       } catch (e) {
         console.warn("[LLM] Erro lendo vault, usando fallback default:", e);
@@ -463,7 +510,7 @@ export default {
           this.messages.push({
             role: "bot",
             text: "⚠️ API Key inválida. Verifique e tente novamente.",
-            time: this.getTime(),
+            time: this.getCurrentTime(),
           });
         });
         return;
@@ -473,13 +520,15 @@ export default {
         await saveCredentials(this.llmConfig.providerId, this.llmConfig.modelId, this.llmConfig.apiKey.trim());
         this.llmConfig._vaultKey = this.llmConfig.apiKey.trim();
         this.llmConfig.hasKey = true;
+        const savedProvider = this.currentProvider?.name || this.llmConfig.providerId;
+        const savedModel = this.llmConfig.modelId;
         // Limpa a key do state (já está salva no vault)
         this.llmConfig.apiKey = "";
         this.showSettingsModal = false;
         this.messages.push({
           role: "bot",
-          text: "✅ Configuração salva com sucesso! O bot agora usa sua própria chave, que fica criptografada e local neste navegador.",
-          time: this.getTime(),
+          text: `✅ Configuração salva! Provider: <strong>${savedProvider}</strong> • Modelo: <strong>${savedModel}</strong>. O bot agora usa sua própria chave, criptografada e local neste navegador.`,
+          time: this.getCurrentTime(),
         });
       } catch (e) {
         console.error("[LLM] Erro salvando vault:", e);
@@ -488,7 +537,8 @@ export default {
       }
     },
     async removeCredentials() {
-      if (!confirm("Tem certeza? O bot voltará a usar a chave padrão (Groq free).")) return;
+      // Limpa TODAS as chaves (botão "remover tudo")
+      if (!confirm("Tem certeza? TODAS as chaves salvas serão removidas. O bot voltará a usar a chave padrão (Groq free).")) return;
       clearCredentials();
       this.llmConfig._vaultKey = null;
       this.llmConfig.hasKey = false;
@@ -496,6 +546,34 @@ export default {
       this.llmConfig.providerId = "groq";
       this.llmConfig.modelId = "llama-3.3-70b-versatile";
       this.showSettingsModal = false;
+    },
+    async removeSpecificCredentials(providerId) {
+      // Remove a key de UM provider específico (lista de chaves salvas)
+      const providerName = getProvider(providerId).name;
+      if (!confirm(`Remover a chave do ${providerName}?`)) return;
+      clearCredentials(providerId);
+      // Se removeu o provider ativo, reseta pro default
+      if (this.llmConfig.providerId === providerId) {
+        this.llmConfig._vaultKey = null;
+        this.llmConfig.hasKey = false;
+        this.llmConfig.providerId = "groq";
+        this.llmConfig.modelId = "llama-3.3-70b-versatile";
+      }
+    },
+    async selectSavedProvider(providerId) {
+      // Ativa um provider que já tem key salva (sem precisar redigitar)
+      const creds = await loadCredentials(providerId);
+      if (!creds) return;
+      this.llmConfig.providerId = creds.providerId;
+      this.llmConfig.modelId = creds.modelId;
+      this.llmConfig._vaultKey = creds.apiKey;
+      this.llmConfig.hasKey = true;
+      this.showSettingsModal = false;
+      this.messages.push({
+        role: "bot",
+        text: `✅ Provider ativo: <strong>${getProvider(providerId).name}</strong> • Modelo: <strong>${creds.modelId}</strong>`,
+        time: this.getCurrentTime(),
+      });
     },
     onProviderChange() {
       // Ao trocar provider, seleciona o primeiro model disponível
@@ -732,7 +810,7 @@ export default {
       // BYOK: usa provider+key+model escolhidos pelo usuário (ou fallback default)
       const API_URL = this.getActiveApiUrl();
       const API_KEY = this.getActiveApiKey();
-      const MODEL = this.llmConfig.modelId || "llama-3.3-70b-versatile";
+      const MODEL = this.llmConfig.modelId || this.currentProvider?.defaultModel || "llama-3.3-70b-versatile";
       const locale = this.$i18n?.locale || "pt";
       const lang = locale === "es" ? "español" : "português brasileiro";
       const systemPrompt = buildSystemPrompt(userText, lang);
@@ -745,42 +823,58 @@ export default {
           sources: [],
         };
       }
+
+      // Histórico (últimas 6 msgs) para contexto — sem HTML, truncado
+      const history = this.messages
+        .slice(-6)
+        .filter((m) => m.role === "user" || m.role === "bot")
+        .map((m) => ({
+          role: m.role === "bot" ? "assistant" : "user",
+          content: m.text.replace(/<[^>]*>/g, "").substring(0, 200),
+        }));
+      const messages = [...history, { role: "user", content: userText }];
+
+      const providerFormat = this.currentProvider?.format || "openai";
+      const providerId = this.llmConfig.providerId;
+
       try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${API_KEY}`,
-            // OpenRouter precisa de header extra
-            ...(this.llmConfig.providerId === "openrouter" ? {
-              "HTTP-Referer": window.location.origin,
-              "X-Title": "LouvorJ.AI Chatbot",
-            } : {}),
-          },
-          body: JSON.stringify({
-            model: MODEL,
-            messages: [
-              { role: "system", content: systemPrompt },
-              ...this.messages.slice(-6).map(m => ({ role: m.role === "bot" ? "assistant" : "user", content: m.text.replace(/<[^>]*>/g, "").substring(0, 200) })),
-              { role: "user", content: userText },
-            ],
-            max_tokens: 1200,
-            temperature: 0.4,
-          }),
-        });
-        if (!res.ok) {
-          const errBody = await res.text();
-          console.error(`[ChatFab] ${this.llmConfig.providerId} API ${res.status}:`, errBody);
-          throw new Error(`${this.llmConfig.providerId} API ${res.status}: ${errBody.substring(0, 200)}`);
+        let result;
+        const common = {
+          apiUrl: API_URL,
+          apiKey: API_KEY,
+          model: MODEL,
+          system: systemPrompt,
+          messages,
+          maxTokens: 1200,
+          temperature: 0.4,
+        };
+
+        if (providerFormat === "gemini") {
+          result = await callGemini(common);
+        } else if (providerFormat === "anthropic") {
+          result = await callAnthropic(common);
+        } else {
+          // OpenAI-compatible: Groq, Z.AI, OpenRouter, OpenAI, NVIDIA, Ollama
+          // OpenRouter precisa de headers extras (HTTP-Referer, X-Title)
+          const extraHeaders = providerId === "openrouter" ? {
+            "HTTP-Referer": window.location.origin,
+            "X-Title": "LouvorJ.AI Chatbot",
+          } : {};
+          result = await callOpenAICompat({ ...common, extraHeaders });
         }
-        const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content;
-        const html = reply ? this.markdownToHtml(reply) : this.$t("chatbot.error");
+
+        const html = result.text ? this.markdownToHtml(result.text) : this.$t("chatbot.error");
         return { text: html, sources: [`${this.currentProvider?.name || "LLM"} • ${MODEL}`] };
       } catch (e) {
-        console.warn("[ChatFab] LLM call failed:", e.message || e);
+        console.warn(`[ChatFab] ${providerId} LLM call failed:`, e.message || e);
+        // Mensagem útil: se 401, key inválida; se 429, rate limit
+        let hint = "";
+        const errMsg = String(e.message || e);
+        if (/401/.test(errMsg)) hint = "<br><br>⚠️ <strong>API Key inválida ou expirada.</strong> Verifique a key nas Configurações IA.";
+        else if (/429/.test(errMsg)) hint = "<br><br>⏱️ <strong>Rate limit excedido.</strong> Aguarde alguns segundos ou troque de provider.";
+        else if (/5\d\d/.test(errMsg)) hint = "<br><br>🔧 <strong>Servidor do provider indisponível.</strong> Tente novamente em alguns instantes.";
         return {
-          text: this.$t("chatbot.fallback"),
+          text: this.$t("chatbot.fallback") + hint,
           sources: ["louvorja.com/ajuda"],
         };
       }

@@ -100,6 +100,26 @@ export default ({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/openai-api/, ""),
         },
+        "/anthropic-api": {
+          target: "https://api.anthropic.com",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/anthropic-api/, ""),
+        },
+        "/gemini-api": {
+          target: "https://generativelanguage.googleapis.com",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/gemini-api/, ""),
+        },
+        "/nvidia-api": {
+          target: "https://integrate.api.nvidia.com",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/nvidia-api/, ""),
+        },
+        "/ollama-api": {
+          target: "https://cloud.olama.ai",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/ollama-api/, ""),
+        },
       },
     },
     /* remove the need to specify .vue files https://vitejs.dev/config/#resolve-extensions

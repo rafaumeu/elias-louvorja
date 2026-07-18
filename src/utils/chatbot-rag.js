@@ -1,6 +1,7 @@
 /**
  * ChatFab RAG — Client-side knowledge base for LouvorJ.AI
- * v2.1 — Expanded with Help Center content from louvorja/site (18 new chunks)
+ * v2.2 — Added Help Center content (HymnalRelation, TemplatesCSS), community insights (Telegram dev group),
+ *         liturgy generation, known issues, and official contacts (5 new chunks)
  *
  * Provides real LouvorJA data to the LLM so it stops hallucinating.
  * Zero backend dependency — all search happens in the browser.
@@ -1411,6 +1412,199 @@ TECLAS DE ATAJO (ES):
 
 NOTA: Cuando respondas en español, usa la terminología española consistente.`,
   },
+
+  // ═══════════════════════════════════════════════════════════════
+  // SEÇÃO D: CONTEÚDO DA CENTRAL DE AJUDA + INSIGHTS DA COMUNIDADE (v2.2)
+  // Extraído de louvorja.com.br/ajuda (componentes Vue) + grupo dev Telegram
+  // ═══════════════════════════════════════════════════════════════
+
+  // ─── CORRESPONDÊNCIA HINÁRIO 1996 → 2022 (de HymnalRelation.vue) ───
+  {
+    id: 'hinario-correspondencia',
+    keywords: ['hinário 1996', 'hinário 2022', 'correspondência', 'mudança', 'hino removido',
+      'hino novo', 'revisão', 'qual hino', 'tabela', '1996', '2022', 'antigo hinário',
+      'novo hinário', 'mudou de número', 'hino mudou', 'hino não existe'],
+    title: 'Correspondência Hinário 1996 → 2022 — Mudanças',
+    text: `CORRESPONDÊNCIA HINÁRIO ADVENTISTA 1996 → 2022
+
+O hinário foi revisado em 2022. LouvorJA suporta AMBOS.
+
+MUDANÇAS DE POSIÇÃO PRINCIPAIS:
+- Hino 1 "O Deus de Amor" (1996) → Hino 8 (2022)
+- Hino 18 "Santo! Santo! Santo!" → AGORA É O HINO 1 (2022): "Santo, Santo, Santo!"
+- Hino 14 "Jubilosos Te Adoramos" → Hino 5
+- Hino 17 "Nós Te Adoramos" → Hino 6
+- Hino 31 "Sublime Amor" → Hino 16
+- Hino 35 "Tu És Fiel, Senhor" → Hino 15
+- Hino 33 "Castelo Forte" → Hino 73
+- Hino 34 "Quão Grande És Tu" → Hino 62
+
+HINOS COM NOME ALTERADO:
+- Hino 40: "Filhos do Pai Celeste" → "Deus É Nosso Pai Celeste"
+- Hino 71: "Saudai o Nome de Jesus (1)" → "Com Glória Coroai" (Hino 27)
+- Hino 72: "Saudai o Nome de Jesus (2)" → "Saudai O Nome De Jesus" (Hino 26)
+- Hino 73: "Rei dos Reis" → Hino 24
+
+HINOS REMOVIDOS NO 2022 (não existem mais):
+5, 9, 19, 25, 29, 37, 38, 39, 51, 55, 56, 57, 67, 68, 75, 78, 79, 80, 81, 82, 84, 87, 89, 99, 102, 107, 108, 110, 112, 114, 116, 118, 121, 125, 128, 129 — e aproximadamente 100 mais do intervalo 131-610 (total ~230 removidos).
+
+220 HINOS NOVOS NO 2022:
+Incluem: Hino 11 "Maior Que Tudo", Hino 20 "Grande É O Senhor", Hino 32 "Brilha Jesus", Hino 33 "A Esperança É Jesus", Hino 34 "Precioso Nome", Hino 35 "Ele É Exaltado", Hino 47 "Cheios Do Espírito", Hino 54 "Unidos Pela Palavra", Hino 55 "Tua Palavra", Hino 68 "Restaura", Hino 76 "Vencedor Cada Dia", Hino 112 "Cordeiro De Deus", Hino 275 "Hino Dos Aventureiros", Hino 276 "Hino Dos Desbravadores".
+
+ORIGEM DOS HINOS NOVOS: CD Jovem (1992-2014), Coletânea Adoradores 1 e 2, Coletânea Original.
+
+Quando um usuário não encontra um hino pelo número antigo, explique que ele pode ter mudado de posição ou sido removido na revisão de 2022.`,
+  },
+
+  // ─── CSS PARA SLIDES (de TemplatesCSS.vue) ───
+  {
+    id: 'templates-css-personalizados',
+    keywords: ['css', 'template', 'personalizar slide', 'customizar', 'formatação',
+      'cor de fundo', 'fonte', 'tamanho da fonte', 'bebas neue', 'gradiente',
+      'estilo do slide', 'aparência', 'template css', 'código css'],
+    title: 'Templates CSS para Personalização de Slides',
+    text: `PERSONALIZAÇÃO DE SLIDES COM CSS NO LOUVORJA
+
+LouvorJA permite personalizar totalmente a aparência dos slides de projeção usando CSS customizado.
+
+TEMPLATE 1 — BEBAS NEUE (FONTE GRANDE):
+- Fonte: 'Bebas Neue Regular', sans-serif (75px)
+- Letter-spacing: 0.03em
+- Text-shadow: black 0.1em 0.1em 0.3em
+- Fundo transparente (rgba 0,0,0,0)
+- Alinhamento vertical inferior (flex-end)
+- A fonte Bebas Neue Regular pode ser baixada em /fonts/BebasNeue-Regular.ttf
+
+TEMPLATE 2 — GRADIENTE COLORIDO:
+- Fonte: 'Open Sans' ou Verdana (30px)
+- Background: gradiente linear multi-cor
+  linear-gradient(to right, #751ab6c2, #247980b6, #899207b7, #69bfb6b9, #7f1e928a)
+- Border-radius: 5%
+- Padding: 10px 40px
+- Cor do texto: #FFFFFF
+- Font-weight: bold
+- Flexbox centralizado
+
+COMO O CSS FUNCIONA NO LOUVORJA:
+- O seletor * afeta TODOS os elementos do slide
+- A classe .quadro controla a caixa de letra do hino
+- Cada slide recebe um $uuid único que isola os estilos
+- O CSS é processado linha por linha e prefixado com o ID único do slide
+- table td controla o alinhamento vertical da tabela de letras`,
+  },
+
+  // ─── GERAÇÃO DE LITURGIA VIA IA (insight do Diego — grupo dev) ───
+  {
+    id: 'liturgia-json-ia',
+    keywords: ['liturgia', 'json da liturgia', 'gerar liturgia', 'automatizar',
+      'configurar culto', 'programação do culto', 'responsável pelo culto',
+      'sugestão de hinos', 'selecionar hinos', 'links do youtube', 'mensagem congregação',
+      'lição da escola sabatina', 'hinos iniciais', 'hinos finais', 'ocr'],
+    title: 'Geração de Liturgia e Sugestão de Hinos via IA',
+    text: `GERAÇÃO DE LITURGIA E SUGESTÃO DE HINOS VIA IA
+
+O LouvorJ.AI pode ajudar a planejar toda a liturgia do culto:
+
+COMO FUNCIONA:
+1. O responsável pelo culto interage com o bot no chat
+2. Informa a data, a lição da Escola Sabatina e temas especiais
+3. O bot sugere hinos (iniciais, finais, intermediários, ofertório)
+4. O responsável ajusta conforme preferência
+5. O bot gera DUAS saídas:
+
+SAÍDA 1 — EQUIPE MULTIMÍDIA (JSON técnico):
+- Formato JSON para importar diretamente no LouvorJA
+- Inclui: número dos hinos, ordem, links de playbacks
+
+SAÍDA 2 — CONGREGAÇÃO (mensagem para WhatsApp/Telegram):
+- Formato legível com data e tema
+- Ex: "📅 18/07/2026 — Lição 3: Unidade em Cristo"
+- Links dos vídeos do YouTube para os irmãos escutarem
+- Aviso de programação invertida quando aplicável
+
+FLUXO DE USO REAL (dos próprios usuários):
+- No início da semana: o responsável envia a seleção de músicas
+- Os irmãos escutam durante a semana para aprender a letra
+- No sábado: chegam com o louvor "na ponta da língua"
+- Princípio: "não há hinos de estimação" — rotatividade no repertório
+
+SUGESTÃO DE HINOS BASEADA NA LIÇÃO:
+- O bot cruza o tema da lição com o catálogo de hinos
+- Extrai hinos iniciais (HI) e finais (HF) do manual da Escola Sabatina
+- Aplica graduação emocional: Louvor da ES = acolhedor/animado; Culto Divino = solene/reflexivo
+- HI e HF do Culto Divino são definidos pelo PREGADOR (marcar como "definido pelo orador")
+- Ofertório padrão: "Quero Ofertar" — Saída padrão: NHA 600 "Em Paz Eu Vou"`,
+  },
+
+  // ─── PROBLEMAS CONHECIDOS (do grupo de suporte/dev) ───
+  {
+    id: 'problemas-conhecidos',
+    keywords: ['problema', 'erro', 'bug', 'travou', 'não funciona', 'fecha sozinho',
+      'monitores invertidos', 'ordem dos monitores', 'tela de download', 'acento',
+      'utf-8', 'sorteio', 'node', 'versão do node', 'nvm'],
+    title: 'Problemas Conhecidos e Soluções',
+    text: `PROBLEMAS CONHECIDOS DO LOUVORJA E SOLUÇÕES
+
+1. ORDEM DOS MONITORES INVERTIDA (Windows):
+- Após atualização, o app pode inverter a ordem dos monitores (o que era 1 vira 2)
+- Não é bug — é o comportamento do programa (não segue a ordem do Windows)
+- Solução: inverter manualmente nas configurações do LouvorJA
+
+2. MÚSICA FECHA AO TOCAR ATÉ O FIM:
+- Comportamento NORMAL do programa (não é erro)
+- A música fecha automaticamente quando termina
+
+3. TELA DE DOWNLOAD TRAVA APÓS BAIXAR:
+- Após baixar arquivos, a tela pode travar sem botão de sair
+- Solução temporária: fechar via Gerenciador de Tarefas
+- Reabrindo o app volta ao normal
+
+4. ACENTOS EM SORTEIO (UTF-8):
+- Resolvido nas versões recentes (exe atualizado)
+- Se persistir, baixe a versão mais recente
+
+5. TRANSFERIR MÚSICAS PARA OUTRO PC:
+- Copie a pasta "config" para um pendrive
+- Cole no diretório de instalação do LouvorJA no PC de destino
+- Permite baixar músicas em casa (internet melhor) e levar para a igreja
+
+6. DESENVOLVIMENTO (para devs):
+- Node.js >= 20 recomendado (use nvm para gerenciar versões)
+- yarn install pode falhar com dependências; use npm install
+- Versão Electron em desenvolvimento ativo (Elias)`,
+  },
+
+  // ─── CONTATOS E CANAIS OFICIAIS ───
+  {
+    id: 'contatos-oficiais',
+    keywords: ['contato', 'suporte', 'ajuda', 'telegram', 'whatsapp', 'doação',
+      'doar', 'contato', 'email', 'mayco', 'michael', 'grupo de suporte',
+      'grupo de desenvolvedores', 'reportar bug', 'sugestão'],
+    title: 'Contatos e Canais Oficiais LouvorJA',
+    text: `CONTATOS E CANAIS OFICIAIS LOUVORJA
+
+SUPORTE AO USUÁRIO (NÃO use o grupo de devs para isso):
+- Telegram: louvorja.com.br/telegram
+- WhatsApp: louvorja.com.br/whatsapp
+- Central de Ajuda: louvorja.com.br/ajuda
+
+GRUPO DE DESENVOLVEDORES (apenas programação):
+- Separado do grupo de suporte
+- Discute bugs de código, features, homologação de versões
+- Não é para dúvidas de uso comum
+
+DOAÇÕES:
+- louvorja.com.br/doacao
+- Ajuda com custos de servidores e manutenção
+
+SITE OFICIAL: https://louvorja.com.br
+DOWNLOAD: louvorja.com.br/download
+
+EQUIPE:
+- Mayco/Michael (@maycorolbuche): desenvolvedor principal e mantenedor
+- Diego: ícones, QR code controle remoto
+- Victor: cronômetro e melhorias de interface`,
+  },
 ];
 
 /**
@@ -1470,7 +1664,8 @@ export function searchRAG(query, maxChunks = 5) {
 
 /**
  * Build the full system prompt with RAG context injected.
- * v2.1 — Enhanced with liturgical domain rules, anti-hallucination, and Help Center content.
+ * v2.2 — Enhanced with liturgical domain rules, anti-hallucination, Help Center content,
+ *         community insights, and liturgy generation capabilities.
  *
  * @param {string} query - User's current message
  * @param {string} lang - Language string (e.g. "português brasileiro")
@@ -1480,12 +1675,13 @@ export function buildSystemPrompt(query, lang) {
   const ragContext = searchRAG(query, 5);
 
   let prompt = `Você é o assistente virtual do LouvorJA, um app de gestão musical e litúrgica para a Igreja Adventista do Sétimo Dia.
-Você é especialista em: funcionalidades do app (busca, projeção, transmissão, atalhos, editor de slides, liturgia), hinário adventista (1996 e 2022), sugestão de hinos para culto, estrutura litúrgica IASD, diretrizes musicais adventistas, e TODAS as funcionalidades da Central de Ajuda do LouvorJA.
+Você é especialista em: funcionalidades do app (busca, projeção, transmissão, atalhos, editor de slides, liturgia), hinário adventista (1996 e 2022 — incluindo correspondências e mudanças), sugestão de hinos para culto, estrutura litúrgica IASD, diretrizes musicais adventistas, personalização CSS de slides, problemas conhecidos e soluções, e geração de liturgia via IA.
 
 REGRAS FUNDAMENTAIS:
 - Responda em ${lang}
 - Seja conciso e útil
-- Conhece o LouvorJA: busca de músicas, hinário adventista, projeção, transmissão OBS/VMIX, atalhos de teclado, liturgia, slides, CSS personalizado, exportação (SLJA/PDF/MP3)
+- Conhece o LouvorJA: busca de músicas, hinário adventista (1996 e 2022), projeção, transmissão OBS/VMIX, atalhos de teclado, liturgia, slides, CSS personalizado, exportação (SLJA/PDF/MP3)
+- Pode ajudar a PLANEJAR A LITURGIA COMPLETA do culto, sugerir hinos baseados na lição, e gerar JSON para importar no programa
 
 ANTI-ALUCINAÇÃO (CRÍTICO):
 - NÃO INVENTE números de hinos, nomes de músicas ou álbuns que não estejam nos dados fornecidos.

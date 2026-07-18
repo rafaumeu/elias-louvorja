@@ -105,7 +105,16 @@
     "qr_download_label": "Descargar",
     "provider_label": "Proveedor:",
     "model_label": "Modelo:",
-    "api_key_label": "API Key:"
+    "api_key_label": "API Key:",
+    "saved_keys_label": "Claves guardadas en este navegador",
+    "remove_all_keys": "Eliminar todas las claves",
+    "activate": "Activar",
+    "remove": "Eliminar",
+    "no_saved_keys": "Aún no hay claves guardadas.",
+    "key_required": "Ingresa tu API Key para usar este proveedor.",
+    "key_invalid": "Clave inválida o demasiado corta (mín. 10 caracteres).",
+    "cancel_btn": "Cancelar",
+    "save_btn": "Guardar"
   },
   "common": {
     "cancel": "Cancelar",

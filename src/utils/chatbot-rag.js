@@ -1,6 +1,6 @@
 /**
  * ChatFab RAG — Client-side knowledge base for LouvorJ.AI
- * v2.0 — Expanded with liturgical domain knowledge from sugestor-hinos skill
+ * v2.1 — Expanded with Help Center content from louvorja/site (18 new chunks)
  *
  * Provides real LouvorJA data to the LLM so it stops hallucinating.
  * Zero backend dependency — all search happens in the browser.
@@ -787,6 +787,630 @@ ESTRUTURA TÍPICA DE PROGRAMAÇÃO DE SÁBADO:
 Escola Sabatina: Momentos de Louvor 1 e 2 → Hino de abertura ES → [vídeos] → Hino de encerramento ES
 Culto Divino: Momentos de Louvor 1 e 2 → Hino inicial → [Oração, Sermão] → Dízimos e Ofertas → Hino de saída`,
   },
+
+  // ═══════════════════════════════════════════════════════════════
+  // SEÇÃO C: CONTEÚDO DETALHADO DA CENTRAL DE AJUDA (v2.1 — de louvorja/site)
+  // ═══════════════════════════════════════════════════════════════
+
+  // ─── TECLAS DE ATALHO COMPLETAS ───
+  {
+    id: 'help-shortcuts-full',
+    keywords: ['atalho', 'tecla', 'teclas de atalho', 'shortcut', 'esc', 'ctrl', 'f1', 'f5', 'f9',
+      'seta', 'pgup', 'pgdn', 'home', 'end', 'barra de espaço', 'espaço', 'pause', 'play', 'ctrl+p',
+      'ctrl+w', 'ctrl+f', 'teclado', 'atalhos do teclado'],
+    title: 'Teclas de Atalho — Guia Completo',
+    text: `TECLAS DE ATALHO DO LOUVORJA:
+
+GERAL:
+- ESC: Fecha a tela do segundo monitor / Fecha a música / Fecha a janela ativa
+- CTRL+W: Fecha a aba atual
+- CTRL+F: Abre a busca de músicas
+- F1: Abre a tela de ajuda
+- F5 / F9: Projeta a janela atual (quando disponível) / Projeta a música do Editor de Slides
+
+BÍBLIA / BUSCA BÍBLICA:
+- Seta Esquerda / Seta Cima / PgUp: Vai para o verso anterior
+- Seta Direita / Seta Baixo / PgDn: Vai para o próximo verso
+
+PROJEÇÃO DE MÚSICA:
+- Seta Esquerda / Seta Cima / PgUp: Vai para o slide anterior
+- Seta Direita / Seta Baixo / PgDn: Vai para o próximo slide
+- Home: Vai para o primeiro slide
+- End: Vai para o último slide
+- Pause / Play / CTRL+P / Barra de Espaço: Pausa a música, ou continua se já estiver pausada
+
+EDITOR DE SLIDES:
+- Seta Esquerda / Seta Cima / PgUp: Vai para o slide anterior
+- Seta Direita / Seta Baixo / PgDn: Vai para o próximo slide
+- Home: Vai para o primeiro slide
+- End: Vai para o último slide
+- Pause / Play / CTRL+P / Barra de Espaço: Pausa a música, ou continua
+- CTRL+Seta Direita / CTRL+Seta Baixo: Grava o tempo e avança o slide
+- CTRL+Seta Esquerda / CTRL+Seta Cima: Grava retroativo
+- F5 / F9: Projeta a música`,
+  },
+
+  // ─── TRANSMISSÃO PARA STREAMING (DETALHADO) ───
+  {
+    id: 'help-streaming-full',
+    keywords: ['transmitir', 'transmissão', 'streaming', 'obs', 'vmix', 'ip', 'porta', 'servidor',
+      'navegador', 'transmitir conteúdo', 'como transmitir', 'iniciar servidor', 'usar ip da rede',
+      'objeto navegador', 'endereço de transmissão'],
+    title: 'Transmissão para Streaming (OBS/VMIX) — Passo a Passo',
+    text: `TRANSMITIR CONTEÚDO PARA STREAMING (OBS / VMIX):
+
+O LouvorJA permite transmitir conteúdos para serviços de streaming como OBS e VMIX via navegador.
+
+COMO ATIVAR:
+1. Acesse o botão de Menu (canto superior esquerdo)
+2. Vá até a opção "Transmitir"
+3. Defina o IP e Porta (ou clique em "Usar IP da rede" para usar o IP de rede local)
+4. Clique em "Iniciar Servidor"
+5. Em caso de erro, tente mudar a porta
+
+COMO USAR NO OBS/VMIX:
+- Após iniciado, as letras serão transmitidas via navegador através do endereço mostrado na tela
+- Copie este endereço
+- Cole no programa de streaming (OBS/VMIX), inserindo um objeto Navegador (Browser Source)
+- O conteúdo projetado aparecerá no streaming
+
+OBSERVAÇÃO: O conteúdo transmitido pode ser formatado via CSS personalizado diretamente no programa de streaming.`,
+  },
+
+  // ─── BUSCA DE HINOS (DETALHADO) ───
+  {
+    id: 'help-hymnal-search-full',
+    keywords: ['buscar hino', 'busca de hinos', 'busca hinário', 'número do hino', 'palavra hino',
+      'localizar música', 'buscar por palavra', 'enter', 'duplo clique', 'slide cantado',
+      'slide playback', 'slide sem áudio', 'campo de busca', 'buscar música hinário'],
+    title: 'Busca de Hinos no Hinário — Guia Detalhado',
+    text: `BUSCA DE HINOS NA ABA "HINÁRIO":
+
+O campo de busca pode ser usado de duas maneiras:
+
+1. NÚMERO DO HINO:
+   - Digite o número para exibir o hino correspondente
+   - Pressione ENTER para executar o hino
+   - Ou dê um duplo-clique sobre ele
+
+2. PALAVRA (NOME):
+   - Digite o nome ou parte do nome do hino
+   - Todos os hinos que contêm essa palavra serão listados
+   - Ex: Ao digitar "Jesus", são mostrados "Nasce Jesus", "Saudai o Nome de Jesus", "Jesus é Melhor", "O Amor de Jesus", etc.
+
+BUSCA POR LETRA DA MÚSICA:
+- Use a opção "Localizar Músicas" dentro do menu "Coletâneas"
+
+OPÇÕES DE ABERTURA DO HINO (abaixo do campo de busca):
+- Slide Cantado: Abre os slides do hino com áudio cantado
+- Slide Playback: Abre os slides do hino com áudio playback
+- Slide Sem Áudio: Abre os slides do hino sem áudio (tempos desativados, mudança manual)`,
+  },
+
+  // ─── REPRODUÇÃO DE HINOS — TODOS OS MODOS ───
+  {
+    id: 'help-hymnal-playback-full',
+    keywords: ['reproduzir hino', 'reprodução hinos', 'abrir hino', 'modo de abertura',
+      'letra hino', 'slide cantado', 'slide playback', 'slide sem áudio', 'em sequência',
+      'arquivo de áudio', 'mp3 cantado', 'mp3 playback', 'menu hino', 'tipos de reprodução'],
+    title: 'Reprodução de Hinos — Todos os Modos de Abertura',
+    text: `REPRODUÇÃO DE HINOS — MODOS DISPONÍVEIS NO MENU:
+
+No menu de cada hino, é possível abrir de diversas formas:
+
+1. LETRA: Abre uma janela apenas com a letra da música
+2. SLIDE - CANTADO: Abre os slides do hino com áudio cantado (com voz)
+3. SLIDE - PLAYBACK: Abre os slides do hino com áudio playback (só instrumento)
+4. SLIDE - SEM ÁUDIO: Abre os slides sem áudio. Os tempos ficam desativados — o operador deve mudar de slide manualmente
+5. SLIDE - EM SEQUÊNCIA: Abre o hino atual e, ao término, executa automaticamente os próximos hinos em sequência numérica
+6. ARQUIVO DE ÁUDIO - CANTADO: Abre o arquivo mp3 da música cantada (sem slides)
+7. ARQUIVO DE ÁUDIO - PLAYBACK: Abre o arquivo mp3 do playback da música (sem slides)
+
+REPRODUÇÃO EM SEQUÊNCIA:
+- Na aba "Hinário", selecione um hino e pressione o botão "Em Sequência"
+- O hino atual será executado e, ao término, o próximo hino (n+1) será executado automaticamente
+- Ex: Hino 51 executado → ao terminar, executa 52, depois 53, e assim sucessivamente`,
+  },
+
+  // ─── LOCALIZAR MÚSICAS (BUSCA AVANÇADA) ───
+  {
+    id: 'help-find-music-full',
+    keywords: ['localizar música', 'localizar musicas', 'buscar música coletânea', 'asterisco busca',
+      'curinga busca', 'busca avançada', 'wildcard', 'filtro busca', 'ícone youtube',
+      'ícone pb', 'música playback ícone', 'busca por letra inicial', 'aba letra'],
+    title: 'Localizar Músicas — Busca Avançada com Curingas',
+    text: `LOCALIZAR MÚSICAS — BUSCA AVANÇADA:
+
+Na tela "Localizar Músicas", digite o nome da música a ser buscada. A busca respeita os filtros escolhidos.
+
+BUSCA COM ASTERISCO (*):
+- Use asterisco para representar qualquer letra ou palavra entre os termos
+- Ex: Ao buscar "Jesus * Melhor", o programa traz:
+  - "Jesus é Melhor"
+  - "Jesus meu Melhor Amigo"
+
+BUSCA POR LETRA INICIAL:
+- Clique na aba correspondente à letra inicial da música
+- Lista todas as músicas que começam com aquela letra
+
+ÍCONES DE IDENTIFICAÇÃO NA LISTA:
+- Ícone do YouTube: Indica que é uma coletânea do YouTube (requer internet para executar)
+- Ícone azul com letras "PB": Indica que a música possui playback disponível`,
+  },
+
+  // ─── LETRAS DE HINOS/MÚSICAS ───
+  {
+    id: 'help-lyrics-full',
+    keywords: ['letra hino', 'letra música', 'obter letra', 'janela de letra', 'buscar na letra',
+      'destaque vermelho', 'informações álbum', 'botão letra', 'ver letra'],
+    title: 'Obtendo a Letra dos Hinos e Músicas',
+    text: `OBTENDO A LETRA DOS HINOS / MÚSICAS:
+
+- Pressione o botão "Letra" para abrir a janela de letras das músicas
+
+NA JANELA DE LETRA:
+- É possível ver as informações do(s) álbum(ns) onde a música está localizada dentro do programa
+- A letra completa da música é exibida
+- Há um campo de busca rápida dentro da letra
+- Ao usar a busca rápida, a palavra digitada é destacada automaticamente em vermelho na letra
+
+Isso é útil para encontrar versos específicos ou conferir a letra durante a programação.`,
+  },
+
+  // ─── COLETÂNEAS ONLINE ───
+  {
+    id: 'help-online-collections-full',
+    keywords: ['coletânea online', 'coletâneas on-line', 'vídeos online', 'youtube coletânea',
+      'canais youtube', 'atualizar canais', 'playlists online', 'vídeos personalizados',
+      'executar vídeo youtube', 'internet coletânea'],
+    title: 'Coletâneas On-line — YouTube e Vídeos Personalizados',
+    text: `COLETÂNEAS ON-LINE:
+
+A aba "Coletâneas On-line" permite a execução de vídeos direto do YouTube.
+REQUER CONEXÃO COM A INTERNET.
+
+RECURSOS:
+- Seleção de canais pré-cadastrados para execução de vídeos on-line
+- Botões de "Atualizar" permitem atualizar canais, playlists ou vídeos quando há novos conteúdos
+- É possível cadastrar vídeos on-line personalizados através do botão "Vídeos Personalizados"
+
+COMO USAR:
+1. Acesse a aba "Coletâneas On-line"
+2. Selecione um canal ou playlist
+3. Clique sobre o vídeo desejado para executar
+4. Para adicionar vídeos próprios, use "Vídeos Personalizados"`,
+  },
+
+  // ─── COLETÂNEAS PERSONALIZADAS ───
+  {
+    id: 'help-custom-collections-full',
+    keywords: ['coletânea personalizada', 'coletâneas personalizadas', 'adicionar arquivo',
+      'adicionar álbum', 'excluir coletânea', 'excluir álbum', 'colar arquivo', 'ctrl+c ctrl+v',
+      'capa coletânea', 'criar playlist', 'playlist personalizada', 'excluir todas'],
+    title: 'Coletâneas Personalizadas — Adicionar e Gerenciar Arquivos',
+    text: `COLETÂNEAS PERSONALIZADAS:
+
+O LouvorJA permite inserir atalhos para arquivos personalizados (músicas, vídeos, álbuns).
+
+ADICIONANDO ARQUIVO / ÁLBUM:
+1. Acesse a aba "Coletâneas Personalizadas"
+2. Copie o arquivo ou diretório (CTRL+C) e cole na tela (CTRL+V)
+   — OU —
+   Clique no botão "Adicionar" para uma nova coletânea/arquivo
+3. Um painel de adição abrirá no lado esquerdo da tela
+4. Opcionalmente, escolha uma imagem como capa da coletânea
+5. Para criar uma playlist, coloque o diretório do álbum (em vez do caminho de um arquivo único)
+
+EXCLUINDO ÁLBUM/COLETÂNEA:
+- Clique com o botão direito sobre a coletânea → opção "Excluir"
+- IMPORTANTE: Isso exclui apenas o LINK da coletânea do Menu, NÃO exclui o arquivo físico
+
+EXCLUIR TODAS AS COLETÂNEAS:
+- Clique na seta ao lado do botão "Excluir"
+- Selecione "Excluir Todas"
+- Todas as coletâneas serão removidas (apenas os links, não os arquivos)`,
+  },
+
+  // ─── PLAYLIST DAS COLETÂNEAS ───
+  {
+    id: 'help-playlist-full',
+    keywords: ['playlist coletânea', 'lista de músicas coletânea', 'projetar menu',
+      'reproduzir todas', 'botões de ação música', 'ação playlist', 'abrir coletânea',
+      'lista de reprodução coletânea'],
+    title: 'Playlist das Coletâneas — Ações e Projeção',
+    text: `PLAYLIST DAS COLETÂNEAS:
+
+Ao clicar sobre uma coletânea nas abas "JA/Min. Música" ou "Coletâneas Diversas", abre-se uma lista com as músicas que compõem a coletânea. Clique sobre uma música para abrir o slide.
+
+RECURSOS DA TELA:
+- "Projetar Menu": Projeta a lista de músicas para o público
+- "Reproduzir Todas": Reproduz todas as músicas da coletânea em sequência
+
+BOTÕES DE AÇÃO (na frente de cada música, em ordem):
+1. Abre os slides com áudio cantado
+2. Abre os slides com áudio playback
+3. Abre os slides sem áudio (tempos desativados, mudança manual)
+4. Abre o arquivo mp3 da música cantada
+5. Abre o arquivo mp3 da música playback
+6. Abre uma janela com a letra da música`,
+  },
+
+  // ─── BUSCA BÍBLICA AVANÇADA ───
+  {
+    id: 'help-bible-search-full',
+    keywords: ['busca bíblica', 'buscar passagem', 'buscar verso', 'busca bíblia',
+      'asterisco bíblia', 'deus terra', 'filtros bíblia', 'passagem bíblica busca',
+      'busca passagens', 'palavra na bíblia'],
+    title: 'Busca Bíblica — Busca de Passagens com Curingas',
+    text: `BUSCA BÍBLICA — BUSCANDO PASSAGENS:
+
+Acesse a aba "Busca Bíblica" para buscar passagens bíblicas. Use os filtros de busca para definir os parâmetros.
+
+BUSCA COM ASTERISCO (*):
+- Use asterisco para representar qualquer letra ou palavra entre os termos
+- Ex: Ao buscar "Deus*terra", o programa traz todas as passagens que tenham ambas as palavras
+- Resultado exemplo: "No princípio criou Deus os céus e a terra."
+
+EXIBINDO MÚLTIPLOS VERSOS:
+Para exibir mais de um verso bíblico, coloque os versos no campo de busca:
+- "1-3" → Versos de 1 a 3
+- "1,3" → Versos 1 e 3
+- "1-3,5" → Versos de 1 a 3, e também o 5
+
+Após colocar os versos desejados, pressione ENTER.`,
+  },
+
+  // ─── PASSAGEM BÍBLICA ───
+  {
+    id: 'help-bible-passage-full',
+    keywords: ['passagem bíblica', 'exibir bíblia', 'versão bíblica', 'mudar versão bíblia',
+      'livro capítulo versículo', 'selecionar livro', 'barra de ferramentas bíblia',
+      'verso intercalado', 'múltiplos versos tela'],
+    title: 'Exibindo Passagens Bíblicas',
+    text: `EXIBINDO PASSAGENS BÍBLICAS:
+
+- Selecione o livro, capítulo e versículo para abrir a passagem bíblica
+- Use a lista de versões na barra de ferramentas superior para mudar a versão bíblica
+
+MÚLTIPLOS VERSOS:
+- É possível mostrar mais de um verso bíblico ao mesmo tempo
+- Também é possível exibir versos intercalados (ex: versos 1, 3 e 5)
+- Use formatos como "1-3" (faixa), "1,3" (lista), ou "1-3,5" (misto)`,
+  },
+
+  // ─── FORMATAÇÃO DE CONTEÚDO ───
+  {
+    id: 'help-formatting-full',
+    keywords: ['formatar conteúdo', 'formatação', 'mudar fonte', 'mudar cor',
+      'tamanho fonte', 'imagem de fundo', 'disposição', 'painel formatar', 'restaurar formatação',
+      'botão formatar', 'personalizar tela'],
+    title: 'Formatação de Conteúdo — Fonte, Cor, Fundo',
+    text: `FORMATAÇÃO DE CONTEÚDO:
+
+- Clique no botão "Formatar" para formatar o conteúdo da tela
+- Abre um painel lateral que permite modificar:
+  - Fonte (tipo de letra)
+  - Cor do texto
+  - Tamanho da fonte
+  - Imagem de fundo
+  - Disposição/layout
+
+RESTAURAR:
+- Para restaurar a formatação original, clique no botão "Restaurar"`,
+  },
+
+  // ─── PROJEÇÃO EM OUTRO MONITOR ───
+  {
+    id: 'help-projection-full',
+    keywords: ['projetar tela', 'outro monitor', 'monitor secundário', 'área expandida',
+      'segundo monitor', 'projeção monitor', 'escolher monitor', 'menu opções monitor',
+      'recolher projeção', 'tela expandida'],
+    title: 'Projetando em Outro Monitor',
+    text: `PROJETANDO EM OUTRO MONITOR:
+
+- Clique no botão "Área Expandida" para projetar o conteúdo para outro monitor
+- O monitor secundário pode ser definido em: Menu geral > Opções
+- Se não for detectado o segundo monitor, o conteúdo é aberto no monitor principal
+
+APÓS PROJETAR:
+- O ícone será alterado, indicando que o conteúdo já está projetado
+- Pressione novamente o botão para recolher o conteúdo expandido
+- Ou pressione a tecla "ESC"
+
+ESCOLHER MONITOR:
+- Clique sobre a seta localizada no botão de "Área Expandida"
+- Será aberto um menu para escolha do monitor
+- A escolha fica registrada — ao clicar posteriormente, abre o último monitor selecionado
+- Também pode ser definida no menu Opções`,
+  },
+
+  // ─── ITENS AGENDADOS ───
+  {
+    id: 'help-scheduled-items-full',
+    keywords: ['item agendado', 'itens agendados', 'provai e vede', 'informativo missões',
+      'momento saúde', 'agendar item', 'calendário item', 'categoria agendada',
+      'adicionar categoria agendada', 'vincular liturgia agendado', 'programação recorrente'],
+    title: 'Itens Agendados — Provai e Vede, Missões, Saúde',
+    text: `ITENS AGENDADOS:
+
+Itens agendados são aqueles que fazem parte da programação mas o conteúdo muda a cada sábado.
+Exemplos: Provai e Vede, Informativo Mundial das Missões, Momentos de Saúde, entre outros.
+
+CRIAR CATEGORIA:
+- Clique em "Adicionar Categoria"
+- Uma categoria será criada automaticamente
+- Uma janela abrirá para alterar o nome
+
+ADICIONAR ITENS:
+1. Selecione uma categoria criada anteriormente
+2. Uma tela com calendário se abrirá
+3. Clique duas vezes sobre uma data do calendário
+4. Escolha o arquivo que deverá ser aberto
+5. O arquivo será armazenado para o dia escolhido
+
+VINCULAR NA LITURGIA:
+1. Vá na tela de Liturgia
+2. Clique em "Adicionar Item"
+3. Escolha o tipo "Itens Agendados"
+4. Serão mostrados todos os itens cadastrados
+5. Escolha o item e pressione "Adicionar"
+6. Ao clicar sobre o item na liturgia, abre o item cadastrado para o DIA ATUAL
+
+OBS: O programa NÃO possui vídeos do Provai e Vede nativamente. O usuário deve baixá-los da internet e cadastrá-los manualmente.`,
+  },
+
+  // ─── LITURGIA (DETALHADO) ───
+  {
+    id: 'help-liturgy-full',
+    keywords: ['liturgia detalhada', 'organizar programação', 'adicionar item liturgia',
+      'tipo de item liturgia', 'anotação liturgia', 'arquivo diretório liturgia',
+      'categoria liturgia', 'site liturgia', 'música liturgia', 'sequência culto',
+      'colar liturgia', 'cronograma culto'],
+    title: 'Liturgia — Organização da Programação do Culto',
+    text: `LITURGIA — ORGANIZAÇÃO DA PROGRAMAÇÃO:
+
+A tela de Liturgia serve para organizar a sequência da programação, detalhando as respectivas músicas e arquivos que serão executados no culto.
+
+ADICIONANDO ITENS:
+- Copie o arquivo/diretório (CTRL+C) e cole na tela (CTRL+V)
+- Ou clique em "Adicionar Item" para mais opções
+
+TIPOS DE ITEM DISPONÍVEIS:
+1. ANOTAÇÃO: Não possui ação ao clicar. É apenas um marcador na liturgia (ex: "Oração")
+2. ARQUIVO/DIRETÓRIO: Abre um arquivo ou diretório ao clicar (vídeo, PowerPoint, etc)
+3. CATEGORIA: Não possui ação. Serve apenas para separar grupos de itens visualmente
+4. ITENS AGENDADOS: Mostra itens cadastrados na tela "Itens Agendados". Ao clicar, abre o item do dia atual
+5. MÚSICA: Lista todas as músicas da coletânea. Pode executar uma música específica ou deixar para escolher na hora. Mostra opções de execução do slide (cantado/playback/sem áudio)
+6. SITE: Permite executar um site ao clicar sobre o item`,
+  },
+
+  // ─── EDITOR DE SLIDES (DETALHADO) ───
+  {
+    id: 'help-slide-editor-full',
+    keywords: ['editor de slides detalhado', 'criar slide', 'novo slide', 'duplicar slide',
+      'excluir slide', 'dividir slide', 'mesclar slide', 'texto principal', 'texto auxiliar',
+      'quebra de linha slide', 'caractere pipe', 'editar slide'],
+    title: 'Editor de Slides — Criação e Edição Detalhada',
+    text: `EDITOR DE SLIDES:
+
+Permite a criação de slides para rodar dentro do próprio LouvorJA.
+
+CAMPOS DE TEXTO:
+- Texto Principal: O texto principal do slide
+- Texto Auxiliar: Texto menor, de auxílio, que aparece na parte superior do texto principal
+
+GERENCIAR SLIDES (aba "Slides"):
+- NOVO SLIDE: Cria um slide em branco após o slide atual
+- DUPLICAR SLIDE: Duplica o slide atual e todo seu conteúdo (texto, formatação, fundo)
+- EXCLUIR SLIDE: Exclui o slide atual
+- DIVIDIR SLIDE: Divide o slide atual:
+  (1) Cada linha do texto gera um novo slide
+  (2) O caractere "|" dentro do texto gera uma quebra de linha dentro do MESMO slide
+- MESCLAR PRÓX. SLIDE: Mescla o slide atual com o seguinte, mantendo a formatação do slide atual`,
+  },
+
+  // ─── GRAVAÇÃO DE TEMPOS / INTERVALOS ───
+  {
+    id: 'help-timing-recording-full',
+    keywords: ['gravar tempo', 'gravar intervalo', 'tempo do slide', 'sincronizar slide áudio',
+      'áudio gravação', 'reproduzir slide', 'gravar e avançar', 'gravar início',
+      'gravar retroativo', 'remover gravações', 'aba áudio', 'sincronização música'],
+    title: 'Gravando Intervalos e Tempos dos Slides',
+    text: `GRAVANDO INTERVALOS (TEMPORIZAÇÃO DE SLIDES):
+
+Use a aba "Áudio/Gravação" do Editor de Slides para gravar os tempos.
+
+NECESSÁRIO: O slide deve possuir áudio associado.
+
+BOTÕES DE GRAVAÇÃO:
+- REPRODUZIR: Reproduz os slides com áudio. Necessário áudio. Ao reproduzir, os botões de gravação são habilitados
+- GRAVAR E AVANÇAR: Avança para o próximo slide e grava o momento atual do áudio como ponto de transição
+- GRAVAR INÍCIO: Grava o início do slide atual no momento atual do áudio
+- GRAVAR RETROATIVO: Retrocede um segundo e grava o início do slide (corrige imprecisões)
+- REMOVER GRAVAÇÕES: Remove todos os tempos gravados de TODOS os slides
+
+ATALHOS DE GRAVAÇÃO:
+- CTRL+Seta Direita / CTRL+Seta Baixo: Grava o tempo e avança o slide
+- CTRL+Seta Esquerda / CTRL+Seta Cima: Grava retroativo`,
+  },
+
+  // ─── CSS PARA STREAMING (CÓDIGOS) ───
+  {
+    id: 'help-css-streaming-full',
+    keywords: ['css streaming', 'formatar letra obs', 'formatar letra vmix', 'css letra transmissão',
+      'posicionar letra rodapé', 'tamanho fonte streaming', 'cor fonte streaming',
+      'mudar fonte streaming', 'código css', 'vertical-align', 'font-size css', 'color css',
+      'font-family css', 'css personalizado'],
+    title: 'CSS para Streaming — Códigos Prontos para OBS/VMIX',
+    text: `CSS PARA LETRA NA TRANSMISSÃO (OBS / VMIX):
+
+Dicas de como manipular o CSS para alterar fonte, cor ou fundo do conteúdo projetado para streaming.
+Se o programa permitir manipulação de CSS (como OBS com Browser Source), basta colar os códigos:
+
+POSICIONAR A LETRA NO RODAPÉ:
+  table td{vertical-align:bottom !important;}
+(Para alinhar no topo, mude "bottom" para "top")
+
+MUDAR O TAMANHO DA FONTE:
+  *{font-size:50px !important;}
+(Onde "50px" é o tamanho — mude para outro valor se desejar)
+
+MUDAR A COR DA FONTE:
+  *{color:red !important;}
+(Onde "red" é a cor — use nome em inglês ou hexadecimal como #FFFFFF)
+
+MUDAR A FONTE (TIPO DE LETRA):
+  *{font-family:Arial !important;}
+(Troque "Arial" pela fonte desejada)`,
+  },
+
+  // ─── RELAÇÃO HINÁRIOS 1996 E 2022 ───
+  {
+    id: 'help-hymnal-relation-full',
+    keywords: ['relação hinário', 'hinário 1996 2022', 'hinos removidos', 'hinos novos',
+      'comparação hinário', 'mudança hinário', 'hinário antigo novo', 'equivalência hinos',
+      '230 hinos removidos', 'hinos adicionados 2022'],
+    title: 'Relação entre Hinários 1996 e 2022',
+    text: `RELAÇÃO DE HINOS ENTRE OS HINÁRIOS 1996 E 2022:
+
+O LouvorJA possui tabelas de equivalência entre o Hinário Adventista 1996 e o Hinário Adventista 2022.
+
+DISPONÍVEL NA AJUDA (4 ABAS):
+1. Hinário 1996 x 2022: Encontra o número equivalente no hinário novo a partir do antigo
+2. Hinário 2022 x 1996: Encontra o número equivalente no hinário antigo a partir do novo
+3. Hinos Removidos: 230 hinos do hinário 1996 foram removidos no 2022
+4. Hinos Novos: Hinos adicionados exclusivamente no hinário 2022
+
+EXEMPLOS DE HINOS REMOVIDOS (1996 → não estão no 2022):
+- Nº 5: Supremo Criador
+- Nº 9: Prece ao Trino Deus
+- Nº 19: Ao Coro dos Arcanjos
+- Nº 25: Bendito Seja Deus
+- Nº 51: Clara Noite
+- Nº 75: Jesus Conquista
+- Nº 99: Noventa e Nove Ovelhas
+- Nº 102: Que Grande Amigo!
+- Nº 110: Perfeita Paz
+- Nº 112: Ele Vive
+- Nº 146: Maranata
+- Nº 168: A Última Hora
+- Nº 198: O Maior Milagre
+
+Para a lista completa de 230 hinos removidos e equivalências, consulte a tela de Ajuda > Relação de Hinos no app.`,
+  },
+
+  // ─── EXPORTAR MÚSICAS (DETALHADO) ───
+  {
+    id: 'help-export-full',
+    keywords: ['exportar música', 'formato slja', 'arquivo slja', 'exportar slide',
+      'exportar música programa', 'arquivo do programa', 'exportar para editor'],
+    title: 'Exportando Músicas (Formato SLJA)',
+    text: `EXPORTANDO MÚSICAS:
+
+- Pressione o botão "Exportar Música" para exportar a música atual no formato do programa (SLJA)
+- O arquivo .slja pode ser modificado posteriormente na tela "Editor de Slides"
+- Este formato preserva todos os dados: texto, formatação, fundo, tempos gravados, etc
+
+USO: Útil para backup de músicas customizadas ou compartilhamento entre instalações do LouvorJA.`,
+  },
+
+  // ─── CATEGORIAS DA AJUDA (ÍNDICE) ───
+  {
+    id: 'help-categories-index',
+    keywords: ['central de ajuda', 'categorias ajuda', 'tópicos ajuda', 'menu ajuda',
+      'o que o louvorja faz', 'recursos louvorja', 'funcionalidades louvorja',
+      'guia geral', 'índice ajuda', 'tela de ajuda'],
+    title: 'Central de Ajuda — Índice de Categorias',
+    text: `CENTRAL DE AJUDA DO LOUVORJA — CATEGORIAS:
+
+GERAL:
+- Teclas de Atalho (ESC, CTRL+W, CTRL+F, F1, F5, F9, setas, Home, End, etc)
+- Transmitir conteúdo para streaming (OBS, VMIX)
+
+HINÁRIO:
+- Busca de Hinos (por número ou palavra)
+- Reprodução em sequência
+- Exportar Músicas (SLJA)
+- Localizar Músicas (busca avançada com asterisco)
+- Letras de hinos/músicas
+- Relação Hinários 1996 x 2022
+- Reprodução de Hinos (7 modos: letra, cantado, playback, sem áudio, sequência, mp3 cantado, mp3 playback)
+
+COLETÂNEAS:
+- Coletâneas On-line (YouTube)
+- Coletâneas Personalizadas (arquivos próprios)
+- Playlist das Coletâneas (projetar menu, reproduzir todas)
+
+BÍBLIA:
+- Busca Bíblica (com asterisco)
+- Exibir múltiplos versos
+- Exibindo Passagens
+- Formatação de conteúdo
+- Projeção em outro monitor
+
+UTILITÁRIOS:
+- Provai e Vede (cadastro manual)
+- Itens Agendados
+- Liturgia (programação do culto)
+- Formatação
+- Projeção
+
+EDITOR DE SLIDES:
+- Editor de Slides (criar, duplicar, excluir, dividir, mesclar)
+- Gravando intervalos/tempos
+
+TRANSMISSÃO:
+- Estilos CSS para letra
+- CSS para streaming (códigos prontos)
+- Como transmitir no OBS/VMIX
+
+PERGUNTAS FREQUENTES:
+- Como colocar Provai e Vede
+- Como exibir mais de um verso
+- Como formatar letra no OBS/VMIX
+- Como reproduzir hinos em sequência
+- Como transmitir streaming`,
+  },
+
+  // ─── INTERNACIONALIZAÇÃO ES (RESUMO AJUDA) ───
+  {
+    id: 'help-i18n-es',
+    keywords: ['español ayuda', 'ayuda español', 'spanish help', 'atajos español',
+      'teclas de atajo', 'transmitir español', 'búsqueda himnos español',
+      'diapositivas español', 'liturgia español', 'colecciones español',
+      'biblia español', 'editor diapositivas español'],
+    title: 'Soporte multilíngue — Español',
+    text: `SOPORTE EN ESPAÑOL — LOUVORJA:
+
+El LouvorJA está disponible también en español. La central de ayuda incluye traducciones completas.
+
+TERMINOLOGÍA PT → ES:
+- Hinário → Hinario
+- Slides → Diapositivas
+- Coletâneas → Colecciones
+- Busca Bíblica → Búsqueda Bíblica
+- Itens Agendados → Elementos Agendados
+- Editor de Slides → Editor de Diapositivas
+- Gravar tempos → Grabar intervalos
+- Área Expandida → Área Expandida
+- Letra → Letra
+- Playback → Playback
+- Sem áudio → Sin audio
+- Em sequência → En secuencia
+- Adicionar → Agregar
+- Excluir → Eliminar
+- Projetar → Proyectar
+- Localizar Músicas → Localizar Músicas
+
+TECLAS DE ATAJO (ES):
+- ESC: Cierra la pantalla del segundo monitor
+- CTRL+W: Cierra la pestaña actual
+- CTRL+F: Abre la búsqueda de música
+- F1: Abre la pantalla de ayuda
+- F5/F9: Proyecta la ventana actual / la música del Editor
+
+NOTA: Cuando respondas en español, usa la terminología española consistente.`,
+  },
 ];
 
 /**
@@ -846,7 +1470,7 @@ export function searchRAG(query, maxChunks = 5) {
 
 /**
  * Build the full system prompt with RAG context injected.
- * v2.0 — Enhanced with liturgical domain rules and anti-hallucination.
+ * v2.1 — Enhanced with liturgical domain rules, anti-hallucination, and Help Center content.
  *
  * @param {string} query - User's current message
  * @param {string} lang - Language string (e.g. "português brasileiro")
@@ -856,7 +1480,7 @@ export function buildSystemPrompt(query, lang) {
   const ragContext = searchRAG(query, 5);
 
   let prompt = `Você é o assistente virtual do LouvorJA, um app de gestão musical e litúrgica para a Igreja Adventista do Sétimo Dia.
-Você é especialista em: funcionalidades do app (busca, projeção, transmissão, atalhos), hinário adventista (1996 e 2022), sugestão de hinos para culto, estrutura litúrgica IASD, e diretrizes musicais adventistas.
+Você é especialista em: funcionalidades do app (busca, projeção, transmissão, atalhos, editor de slides, liturgia), hinário adventista (1996 e 2022), sugestão de hinos para culto, estrutura litúrgica IASD, diretrizes musicais adventistas, e TODAS as funcionalidades da Central de Ajuda do LouvorJA.
 
 REGRAS FUNDAMENTAIS:
 - Responda em ${lang}

@@ -77,6 +77,30 @@ export default ({ mode }) => {
     },
     server: {
       port: 5002,
+      host: "0.0.0.0",
+      allowedHosts: true,
+      proxy: {
+        "/groq-api": {
+          target: "https://api.groq.com",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/groq-api/, ""),
+        },
+        "/zai-api": {
+          target: "https://api.z.ai",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/zai-api/, ""),
+        },
+        "/openrouter-api": {
+          target: "https://openrouter.ai",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/openrouter-api/, ""),
+        },
+        "/openai-api": {
+          target: "https://api.openai.com",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/openai-api/, ""),
+        },
+      },
     },
     /* remove the need to specify .vue files https://vitejs.dev/config/#resolve-extensions
   resolve: {

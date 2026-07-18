@@ -18,6 +18,11 @@
         <span class="lj-panel__status">{{ $t("chatbot.status") }}</span>
       </div>
       <div class="lj-panel__actions">
+        <button class="lj-panel__btn" @click="showSettingsModal = true" :title="$t('chatbot.settings')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94 0 .31.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+          </svg>
+        </button>
         <button class="lj-panel__btn" @click="clearChat" :title="$t('chatbot.new_conversation')">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.65 6.35A7.96 7.96 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
@@ -139,11 +144,115 @@
     <v-badge v-if="!isOpen && unreadCount > 0" :content="unreadCount" color="error" location="top-end" dot />
     <img :src="botAvatar" alt="LouvorJ.AI" class="louvorj-chat-trigger__icon" />
   </v-btn>
+
+  <!-- Settings Modal — BYOK (Bring Your Own Key) -->
+  <v-dialog v-model="showSettingsModal" max-width="520" scrollable>
+    <v-card :class="{ 'lj-settings--dark': isDark }" class="lj-settings">
+      <v-card-title class="lj-settings__title">
+        <span>{{ $t('chatbot.settings_title') }}</span>
+        <v-btn icon variant="text" size="small" @click="showSettingsModal = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
+
+      <v-card-text class="lj-settings__body">
+        <!-- Status atual -->
+        <div class="lj-settings__status" :class="{ 'lj-settings__status--active': llmConfig.hasKey }">
+          <v-icon size="16" :color="llmConfig.hasKey ? 'success' : 'warning'">
+            {{ llmConfig.hasKey ? 'mdi-check-circle' : 'mdi-alert-circle' }}
+          </v-icon>
+          <span v-if="llmConfig.hasKey">
+            {{ currentProvider?.name }} • {{ llmConfig.modelId }}
+            <em class="lj-settings__saved">({{ $t('chatbot.key_saved_locally') }})</em>
+          </span>
+          <span v-else>
+            {{ $t('chatbot.using_default_key') }}
+          </span>
+        </div>
+
+        <!-- Privacy note -->
+        <div class="lj-settings__privacy">
+          <v-icon size="14" color="info">mdi-shield-check</v-icon>
+          <span>{{ $t('chatbot.privacy_note') }}</span>
+        </div>
+
+        <v-divider class="my-3" />
+
+        <!-- Provider selector -->
+        <label class="lj-settings__label">{{ $t('chatbot.provider_label') }}</label>
+        <v-select
+          v-model="llmConfig.providerId"
+          :items="providerList"
+          item-title="name"
+          item-value="id"
+          density="compact"
+          variant="outlined"
+          class="mb-3"
+          @update:model-value="onProviderChange"
+        />
+
+        <!-- Model selector -->
+        <label class="lj-settings__label">{{ $t('chatbot.model_label') }}</label>
+        <v-select
+          v-model="llmConfig.modelId"
+          :items="currentProviderModels"
+          item-title="name"
+          item-value="id"
+          density="compact"
+          variant="outlined"
+          class="mb-3"
+        />
+
+        <!-- API Key input -->
+        <label class="lj-settings__label">{{ $t('chatbot.api_key_label') }}</label>
+        <div class="lj-settings__key-row">
+          <v-text-field
+            v-model="llmConfig.apiKey"
+            :type="showApiKey ? 'text' : 'password'"
+            :placeholder="currentProviderHint"
+            density="compact"
+            variant="outlined"
+            hide-details
+            class="lj-settings__key-input"
+          />
+          <v-btn icon variant="text" size="small" @click="showApiKey = !showApiKey">
+            <v-icon size="18">{{ showApiKey ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+          </v-btn>
+        </div>
+
+        <!-- Get key link -->
+        <div class="lj-settings__get-key">
+          <a :href="currentProviderKeyUrl" target="_blank" rel="noopener">
+            <v-icon size="14">mdi-open-in-new</v-icon>
+            {{ $t('chatbot.get_key') }} →
+          </a>
+        </div>
+
+        <!-- Danger zone -->
+        <div v-if="llmConfig.hasKey" class="lj-settings__danger">
+          <v-btn size="small" variant="text" color="error" @click="removeCredentials">
+            <v-icon size="14" class="mr-1">mdi-delete</v-icon>
+            {{ $t('chatbot.remove_key') }}
+          </v-btn>
+        </div>
+      </v-card-text>
+
+      <v-card-actions class="lj-settings__actions">
+        <v-spacer />
+        <v-btn variant="text" @click="showSettingsModal = false">{{ $t('common.cancel') }}</v-btn>
+        <v-btn color="primary" @click="saveCredentials" :loading="savingKey">
+          {{ $t('common.save') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
 import { useTheme } from "vuetify";
 import { buildSystemPrompt } from "@/utils/chatbot-rag";
+import { LLM_PROVIDERS, listProviders, getProvider } from "@/utils/llm-providers";
+import { saveCredentials, loadCredentials, hasCredentials, clearCredentials } from "@/utils/llm-keyvault";
 
 // API_TOKEN removed from frontend — move to backend/.env
 
@@ -210,14 +319,7 @@ const KNOWLEDGE = [
   },
 ];
 
-const QUICK_REPLIES = [
-  { label: "Buscar m\u00fasica", text: "Quero buscar uma m\u00fasica" },
-  { label: "Categorias", text: "Quais categorias est\u00e3o dispon\u00edveis?" },
-  { label: "Hin\u00e1rio", text: "Buscar no hin\u00e1rio" },
-  { label: "Atalhos", text: "Quais s\u00e3o os atalhos do LouvorJA?" },
-  { label: "Transmitir", text: "Como transmitir para OBS/VMIX?" },
-  { label: "Download", text: "Como baixar o app?" },
-];
+// QUICK_REPLIES é gerado via computed (precisa de $t para i18n)
 
 export default {
   name: "ChatFab",
@@ -233,16 +335,58 @@ export default {
     welcomeShown: false,
     unreadCount: 0,
     showQuickReplies: false,
-    quickReplies: QUICK_REPLIES,
     musicIndex: null,
     categories: null,
     hymnalData: null,
     musicLoaded: false,
     uploadingFile: false,
+    // BYOK — Bring Your Own Key
+    showSettingsModal: false,
+    showApiKey: false,
+    savingKey: false,
+    llmConfig: {
+      providerId: "groq",
+      modelId: "llama-3.3-70b-versatile",
+      apiKey: "",
+      hasKey: false,
+      // Credentials carregadas do vault (na memória só)
+      _vaultKey: null,
+    },
   }),
   computed: {
+    quickReplies() {
+      const t = this.$t.bind(this);
+      return [
+        { label: t("chatbot.qr_search_song_label"), text: t("chatbot.qr_search_song") },
+        { label: t("chatbot.qr_categories_label"), text: t("chatbot.qr_categories") },
+        { label: t("chatbot.qr_hymnal_label"), text: t("chatbot.qr_hymnal") },
+        { label: t("chatbot.qr_shortcuts_label"), text: t("chatbot.qr_shortcuts") },
+        { label: t("chatbot.qr_stream_label"), text: t("chatbot.qr_stream") },
+        { label: t("chatbot.qr_download_label"), text: t("chatbot.qr_download") },
+      ];
+    },
     botAvatar() {
       return new URL("@/assets/imgs/chatbot-avatar.jpg", import.meta.url).href;
+    },
+    // BYOK computed
+    providerList() {
+      return listProviders();
+    },
+    currentProvider() {
+      return getProvider(this.llmConfig.providerId);
+    },
+    currentProviderModels() {
+      const p = this.currentProvider;
+      if (!p || !p.models) return [];
+      return p.models; // já é array [{id, name}]
+    },
+    currentProviderHint() {
+      const p = this.currentProvider;
+      return p ? p.keyHint : "API Key";
+    },
+    currentProviderKeyUrl() {
+      const p = this.currentProvider;
+      return p ? p.keyUrl : "#";
     },
     currentThemeName() {
       const dark = this.theme?.global?.current?.value?.dark;
@@ -295,6 +439,87 @@ export default {
     },
   },
   methods: {
+    // ========== BYOK (Bring Your Own Key) ==========
+    async initVault() {
+      try {
+        // Verifica se já tem credentials salvas
+        if (hasCredentials()) {
+          const creds = await loadCredentials();
+          if (creds) {
+            this.llmConfig.providerId = creds.providerId;
+            this.llmConfig.modelId = creds.modelId;
+            this.llmConfig._vaultKey = creds.apiKey;
+            this.llmConfig.hasKey = true;
+            console.info(`[LLM] BYOK ativo: ${creds.providerId}/${creds.modelId}`);
+          }
+        }
+      } catch (e) {
+        console.warn("[LLM] Erro lendo vault, usando fallback default:", e);
+      }
+    },
+    async saveCredentials() {
+      if (!this.llmConfig.apiKey || this.llmConfig.apiKey.trim().length < 10) {
+        this.$nextTick(() => {
+          this.messages.push({
+            role: "bot",
+            text: "⚠️ API Key inválida. Verifique e tente novamente.",
+            time: this.getTime(),
+          });
+        });
+        return;
+      }
+      this.savingKey = true;
+      try {
+        await saveCredentials(this.llmConfig.providerId, this.llmConfig.modelId, this.llmConfig.apiKey.trim());
+        this.llmConfig._vaultKey = this.llmConfig.apiKey.trim();
+        this.llmConfig.hasKey = true;
+        // Limpa a key do state (já está salva no vault)
+        this.llmConfig.apiKey = "";
+        this.showSettingsModal = false;
+        this.messages.push({
+          role: "bot",
+          text: "✅ Configuração salva com sucesso! O bot agora usa sua própria chave, que fica criptografada e local neste navegador.",
+          time: this.getTime(),
+        });
+      } catch (e) {
+        console.error("[LLM] Erro salvando vault:", e);
+      } finally {
+        this.savingKey = false;
+      }
+    },
+    async removeCredentials() {
+      if (!confirm("Tem certeza? O bot voltará a usar a chave padrão (Groq free).")) return;
+      clearCredentials();
+      this.llmConfig._vaultKey = null;
+      this.llmConfig.hasKey = false;
+      this.llmConfig.apiKey = "";
+      this.llmConfig.providerId = "groq";
+      this.llmConfig.modelId = "llama-3.3-70b-versatile";
+      this.showSettingsModal = false;
+    },
+    onProviderChange() {
+      // Ao trocar provider, seleciona o primeiro model disponível
+      const models = this.currentProviderModels;
+      if (models.length > 0) {
+        this.llmConfig.modelId = models[0].id;
+      }
+      this.llmConfig.apiKey = "";
+    },
+    getActiveApiKey() {
+      // Se usuário salvou key própria, usa ela. Senão, fallback pro .env default.
+      if (this.llmConfig._vaultKey) return this.llmConfig._vaultKey;
+      return import.meta.env.VITE_GROQ_API_KEY || "";
+    },
+    getActiveApiUrl() {
+      const isDev = import.meta.env.DEV;
+      const p = this.currentProvider || LLM_PROVIDERS.groq;
+      // Em dev: usa proxy Vite (sem CORS). Em prod: URL direta.
+      if (isDev && p.devProxy) {
+        return p.devProxy;
+      }
+      return p.apiUrl;
+    },
+    // ========== API antiga (mantida) ==========
     getApiBase() {
       return window.location.hostname === "localhost"
         ? "http://localhost:8000"
@@ -371,12 +596,14 @@ export default {
       const t = text.toLowerCase();
       const isSearch = t.includes("buscar") || t.includes("procurar") || t.includes("achar") || t.includes("encontrar");
       const isMusic = t.includes("m\u00fasica") || t.includes("hino") || t.includes("som") || t.includes("louvor");
-      const isCollection = t.includes("coleção") || t.includes("colecoes") || t.includes("coletanea") || t.includes("coletaneas") || t.includes("playlist") || t.includes("coletânea") || t.includes("coletâneas") || t.includes("album") || t.includes("albuns") || t.includes("álbum") || t.includes("álbuns");
-      const hasTopic = t.includes("volta") || t.includes("jesus") || t.includes("deus") || t.includes("amor") || t.includes("fe") || t.includes("esperan") || t.includes("salva") || t.includes("gratid") || t.includes("alegr") || t.includes("paz") || t.includes("redenc") || t.includes("perdao") || t.includes("adora") || t.includes("grac") || t.includes("bondade");
+      const isCollection = t.includes("cole\u00e7\u00e3o") || t.includes("colecoes") || t.includes("coletanea") || t.includes("coletaneas") || t.includes("playlist") || t.includes("colet\u00e2nea") || t.includes("colet\u00e2neas") || t.includes("album") || t.includes("albuns") || t.includes("\u00e1lbum") || t.includes("\u00e1lbuns");
       // If user asks about a topic WITHIN collections, let LLM handle it (cross-reference)
+      const hasTopic = t.includes("volta") || t.includes("jesus") || t.includes("deus") || t.includes("amor") || t.includes("fe") || t.includes("esperan") || t.includes("salva") || t.includes("gratid") || t.includes("alegr") || t.includes("paz") || t.includes("redenc") || t.includes("perdao") || t.includes("adora") || t.includes("grac") || t.includes("bondade");
       if (hasTopic && isCollection) return "knowledge";
       if (isSearch && isMusic) return "music_search";
-      if (t.includes("hinari") || t.includes("hino adventista") || (/\d/.test(t) && !isCollection)) return "hymnal_search";
+      // hymnal_search s\u00f3 para queries espec\u00edficas de n\u00famero (ex: "hino 440")
+      // Perguntas sobre hin\u00e1rio em geral v\u00e3o pro LLM
+      if (/^.*hino\s+\d{1,4}/.test(t) || /^.*hino\s+adventista\s+\d{1,4}/.test(t)) return "hymnal_search";
       if (isCollection) return "categories";
       return "knowledge";
     },
@@ -384,18 +611,17 @@ export default {
       const intent = this.detectIntent(userText);
       switch (intent) {
         case "music_search": return await this.handleMusicSearch(userText);
-        case "hymnal_search": return await this.handleHymnalSearch(userText);
         case "categories": return await this.handleCategories();
-        case "knowledge": {
-          const local = this.handleKnowledge(userText);
-          if (local) return local;
+        case "hymnal_search": {
+          // Tenta API primeiro, faz fallback pro LLM se não encontrar
+          const apiResult = await this.handleHymnalSearch(userText);
+          if (apiResult && !apiResult.notFound) return apiResult;
           return await this.callLLM(userText);
         }
+        case "knowledge":
         default:
-          return {
-            text: this.$t("chatbot.guardrail"),
-            sources: [],
-          };
+          // LLM \u00e9 a via prim\u00e1ria — RAG j\u00e1 est\u00e1 no system prompt
+          return await this.callLLM(userText);
       }
     },
     async fetchMusicIndex() {
@@ -423,15 +649,15 @@ export default {
     async handleMusicSearch(query) {
       await this.fetchMusicIndex();
       const arr = Array.isArray(this.musicIndex) ? this.musicIndex : (this.musicIndex?.data || []);
-      if (!arr.length) return { text: "N\u00e3o consegui carregar o \u00edndice de m\u00fasicas. Tente novamente.", sources: [] };
+      if (!arr.length) return { text: this.$t("chatbot.songs_index_error"), sources: [] };
       const q = query.toLowerCase().replace(/quero|gostaria de|buscar|procurar|hino|som|louvor|sobre/gi, "").trim();
-      if (!q) return { text: "Digite o nome ou parte do nome da m\u00fasica que deseja buscar.", sources: [] };
+      if (!q) return { text: this.$t("chatbot.songs_empty_query"), sources: [] };
       const results = arr.filter(m => {
         const title = (m.title || m.name || "").toLowerCase();
         const artist = (m.artist || m.author || "").toLowerCase();
         return title.includes(q) || artist.includes(q);
       }).slice(0, 8);
-      if (!results.length) return { text: `N\u00e3o encontrei resultados para "<strong>${this.escapeHtml(q)}</strong>". Tente outro termo!`, sources: [] };
+      if (!results.length) return { text: this.$t("chatbot.songs_no_results", { q: this.escapeHtml(q) }), sources: [] };
       const html = results.map(m => {
         const name = m.title || m.name || "Sem t\u00edtulo";
         const parts = [m.hymnal, m.tone ? `Tom ${m.tone}` : null, m.artist || m.author || null].filter(Boolean);
@@ -443,7 +669,7 @@ export default {
     async handleHymnalSearch(query) {
       const data = await this.fetchHymnal();
       const arr = Array.isArray(data) ? data : (data?.data || []);
-      if (!arr.length) return { text: "N\u00e3o consegui carregar o hin\u00e1rio. Tente novamente.", sources: [] };
+      if (!arr.length) return { text: this.$t("chatbot.hymnal_index_error"), sources: [] };
       const q = query.toLowerCase().replace(/buscar|hin[aá]rio|hino|adventista|n[úu]mero|numero|no|na/g, "").trim();
       const num = parseInt(q);
       let results;
@@ -454,7 +680,7 @@ export default {
       } else {
         results = arr.slice(0, 10);
       }
-      if (!results.length) return { text: "N\u00e3o encontrei esse hino. Tente digitar o n\u00famero ou nome!", sources: [] };
+      if (!results.length) return { text: this.$t("chatbot.hymnal_not_found"), sources: [], notFound: true };
       const html = results.map(h => {
         const name = h.title || h.name || "Sem t\u00edtulo";
         const number = h.number || h.num || h.numero || "";
@@ -467,7 +693,7 @@ export default {
     async handleCategories() {
       const data = await this.fetchCategories();
       const arr = Array.isArray(data) ? data : (data?.data || []);
-      if (!arr.length) return { text: "N\u00e3o consegui carregar as categorias. Tente novamente.", sources: [] };
+      if (!arr.length) return { text: this.$t("chatbot.categories_error"), sources: [] };
       const html = arr.map(c => {
         const name = c.name || c.title || c.category || "Sem nome";
         const count = c.count || c.total || c.music_count || "";
@@ -486,48 +712,73 @@ export default {
     markdownToHtml(text) {
       if (!text) return "";
       return text
+        // Listas com * ou - no início da linha
+        .replace(/^[*-]\s+(.+)$/gm, "<li>$1</li>")
+        // Listas numeradas
+        .replace(/^\d+[.)]\s+(.+)$/gm, "<li>$1</li>")
+        // Bold e itálico
         .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
         .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+        // Headers
         .replace(/^### (.+)$/gm, "<h4>$1</h4>")
         .replace(/^## (.+)$/gm, "<h3>$1</h3>")
         .replace(/^# (.+)$/gm, "<h2>$1</h2>")
-        .replace(/^- (.+)$/gm, "<li>$1</li>")
-        .replace(/^\d+\. (.+)$/gm, "<li>$1</li>")
+        // Quebras de linha
         .replace(/\n{2,}/g, "<br><br>")
         .replace(/\n/g, "<br>");
     },
 
     async callLLM(userText) {
-      const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-      const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-      const MODEL = "llama-3.3-70b-versatile";
+      // BYOK: usa provider+key+model escolhidos pelo usuário (ou fallback default)
+      const API_URL = this.getActiveApiUrl();
+      const API_KEY = this.getActiveApiKey();
+      const MODEL = this.llmConfig.modelId || "llama-3.3-70b-versatile";
       const locale = this.$i18n?.locale || "pt";
       const lang = locale === "es" ? "español" : "português brasileiro";
       const systemPrompt = buildSystemPrompt(userText, lang);
+
+      if (!API_KEY) {
+        const providerName = this.currentProvider?.name || "LLM";
+        console.error(`[ChatFab] ${providerName} API Key ausente! Abra Configurações IA (⚙️).`);
+        return {
+          text: `⚠️ <strong>Nenhuma API Key configurada.</strong><br><br>Para usar o assistente IA, clique no ícone ⚙️ no topo do chat e configure sua própria chave (gratuita).<br><br>Provider atual: <strong>${providerName}</strong>`,
+          sources: [],
+        };
+      }
       try {
-        const res = await fetch(GROQ_API_URL, {
+        const res = await fetch(API_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${GROQ_API_KEY}`,
+            "Authorization": `Bearer ${API_KEY}`,
+            // OpenRouter precisa de header extra
+            ...(this.llmConfig.providerId === "openrouter" ? {
+              "HTTP-Referer": window.location.origin,
+              "X-Title": "LouvorJ.AI Chatbot",
+            } : {}),
           },
           body: JSON.stringify({
             model: MODEL,
             messages: [
               { role: "system", content: systemPrompt },
-              ...this.messages.slice(-10).map(m => ({ role: m.role === "bot" ? "assistant" : "user", content: m.text.replace(/<[^>]*>/g, "") })),
+              ...this.messages.slice(-6).map(m => ({ role: m.role === "bot" ? "assistant" : "user", content: m.text.replace(/<[^>]*>/g, "").substring(0, 200) })),
               { role: "user", content: userText },
             ],
-            max_tokens: 600,
-            temperature: 0.6,
+            max_tokens: 1200,
+            temperature: 0.4,
           }),
         });
-        if (!res.ok) throw new Error(`Groq API ${res.status}`);
+        if (!res.ok) {
+          const errBody = await res.text();
+          console.error(`[ChatFab] ${this.llmConfig.providerId} API ${res.status}:`, errBody);
+          throw new Error(`${this.llmConfig.providerId} API ${res.status}: ${errBody.substring(0, 200)}`);
+        }
         const data = await res.json();
         const reply = data.choices?.[0]?.message?.content;
-        return { text: reply || this.$t("chatbot.error"), sources: ["Groq LLM"] };
+        const html = reply ? this.markdownToHtml(reply) : this.$t("chatbot.error");
+        return { text: html, sources: [`${this.currentProvider?.name || "LLM"} • ${MODEL}`] };
       } catch (e) {
-        console.warn("[ChatFab] LLM call failed:", e);
+        console.warn("[ChatFab] LLM call failed:", e.message || e);
         return {
           text: this.$t("chatbot.fallback"),
           sources: ["louvorja.com/ajuda"],
@@ -581,7 +832,7 @@ export default {
           this.$nextTick(() => this.scrollToBottom());
         } catch {
           this.isTyping = false;
-          this.messages.push({ role: "bot", text: "Erro ao analisar o arquivo. Tente novamente ou copie o conte\u00fado como mensagem.", time: this.getCurrentTime() });
+          this.messages.push({ role: "bot", text: this.$t("chatbot.file_parse_error"), time: this.getCurrentTime() });
           this.scrollToBottom();
         }
       };
@@ -589,7 +840,7 @@ export default {
         this.uploadingFile = false;
         this.isTyping = false;
         this.messages[this.messages.length - 1] = { role: "user", text: this.escapeHtml(file.name), time: this.getCurrentTime() };
-        this.messages.push({ role: "bot", text: "N\u00e3o foi poss\u00edvel ler o arquivo. Tente novamente ou copie e cole o conte\u00fado.", time: this.getCurrentTime() });
+        this.messages.push({ role: "bot", text: this.$t("chatbot.file_read_error"), time: this.getCurrentTime() });
         this.scrollToBottom();
       };
       reader.readAsText(file);
@@ -623,6 +874,10 @@ export default {
         time: this.getCurrentTime(),
       });
     },
+  },
+  mounted() {
+    // Inicializa BYOK vault (carrega credentials salvas se existirem)
+    this.initVault();
   },
 };
 </script>
@@ -882,5 +1137,93 @@ export default {
 @media (max-width: 480px) {
   .louvorj-chat-trigger { bottom: 16px; right: 16px; width: 44px; height: 44px; }
   .lj-msg { max-width: 90%; }
+}
+
+/* ========== SETTINGS MODAL (BYOK) ========== */
+.lj-settings {
+  font-family: inherit;
+}
+.lj-settings--dark {
+  background: #1a1a2e !important;
+  color: #e0e0e0;
+}
+.lj-settings__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #1b2a41, #2d4059);
+  color: white;
+}
+.lj-settings__body {
+  padding: 16px 20px;
+}
+.lj-settings__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(255,193,7,0.1);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 10px;
+}
+.lj-settings__status--active {
+  background: rgba(76,175,80,0.12);
+}
+.lj-settings__saved {
+  opacity: 0.7;
+  font-size: 0.75rem;
+  margin-left: 4px;
+}
+.lj-settings__privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(33,150,243,0.08);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #888;
+  margin-bottom: 8px;
+}
+.lj-settings__label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+.lj-settings__key-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.lj-settings__key-input {
+  flex: 1;
+}
+.lj-settings__get-key {
+  margin-top: 6px;
+  font-size: 0.75rem;
+}
+.lj-settings__get-key a {
+  color: var(--v-theme-primary, #1b2a41);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.lj-settings__get-key a:hover {
+  text-decoration: underline;
+}
+.lj-settings__danger {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+.lj-settings__actions {
+  padding: 12px 20px;
 }
 </style>

@@ -27,8 +27,13 @@ export default {
   },
   methods: {
     async loadDBVersion() {
-      const config = await this.$database.get("config");
-      this.db_version = config.version_number;
+      try {
+        const config = await this.$database.get("config");
+        // config pode ser null quando o backend (localhost:7070) está offline.
+        this.db_version = config?.version_number ?? "0";
+      } catch {
+        this.db_version = "0";
+      }
     },
   },
   async mounted() {

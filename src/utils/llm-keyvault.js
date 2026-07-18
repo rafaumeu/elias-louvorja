@@ -35,6 +35,12 @@ function getFingerprint() {
 }
 
 async function getDerivedKey(salt) {
+  // Normaliza salt para Uint8Array (defesa contra Array plain vindo de JSON.parse).
+  // SubtleCrypto.deriveKey exige BufferSource; Array comum causa:
+  //   "Pbkdf2Params: salt: Not a BufferSource"
+  const saltBytes = salt instanceof Uint8Array
+    ? salt
+    : new Uint8Array(Array.isArray(salt) ? salt : []);
   const baseKey = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(await getFingerprint()),
@@ -43,7 +49,7 @@ async function getDerivedKey(salt) {
     ["deriveKey"],
   );
   return crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
+    { name: "PBKDF2", salt: saltBytes, iterations: 100000, hash: "SHA-256" },
     baseKey,
     { name: "AES-GCM", length: 256 },
     false,
